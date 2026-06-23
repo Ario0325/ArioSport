@@ -1,0 +1,10 @@
+name = "ariosport-proxy"
+main = "src/worker.js"
+compatibility_date = "2024-12-01"
+
+[vars]
+# آدرس سایت جنگو روی PythonAnywhere
+DJANGO_ORIGIN = "https://ariosport.pythonanywhere.com"
+
+# مسیرهای مجاز برای پروکسی (امنیت)
+ALLOWED_PATHS = "/api/posts/create/,/api/categories/,/api/health/"
