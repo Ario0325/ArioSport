@@ -18,7 +18,7 @@
           <a href="{% url 'accounts:logout' %}" class="btn btn-ghost btn-block"><i data-lucide="log-out"></i> خروج</a>
         </div>
       </aside>
-      <div style="display:flex; flex-direction:column; gap:20px;">
+      <div class="dash-main">
         <div class="dash-stats">
           <div class="dash-stat"><i data-lucide="message-circle"></i><div><span class="n">{{ comment_count|fa_digits }}</span><span class="l">دیدگاه</span></div></div>
           <div class="dash-stat"><i data-lucide="mail"></i><div><span class="n en">{{ user.email }}</span><span class="l">ایمیل</span></div></div>
