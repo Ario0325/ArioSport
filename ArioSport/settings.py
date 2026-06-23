@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-ariosport-local-dev-key-change-in-production-9z3k!x"
 DEBUG = True
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "ariosport.pythonanywhere.com"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",

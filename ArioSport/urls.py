@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
 from Blog_Module.sitemaps import PostSitemap, StaticSitemap
+from Blog_Module.api import create_post_api, list_categories_api, api_health
 from Core_Module import views as core_views
 
 sitemaps = {"posts": PostSitemap, "static": StaticSitemap}
@@ -19,6 +20,10 @@ urlpatterns = [
     path("admin/", include("Accounts_Module.admin_urls")),
     path("", include("Core_Module.urls")),
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
+    # n8n API endpoints
+    path("api/health/", api_health, name="api_health"),
+    path("api/posts/create/", create_post_api, name="api_create_post"),
+    path("api/categories/", list_categories_api, name="api_categories"),
 ]
 
 if settings.DEBUG:
