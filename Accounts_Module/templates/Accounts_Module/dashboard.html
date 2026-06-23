@@ -2,35 +2,92 @@
 {% load static persian_date_tags %}
 {% block title %}حساب من | {{ site.site_name }}{% endblock %}
 {% block content %}
-<section class="page-hero"><div class="container"><h1 data-reveal>حساب کاربری</h1>
-  <div class="breadcrumb" data-reveal data-delay="1"><a href="{% url 'home:index' %}">خانه</a> <i data-lucide="chevron-left"></i> <span>داشبورد</span></div></div></section>
-<section class="section" style="padding-top:40px;">
+<section class="page-hero">
   <div class="container">
+    <h1 data-reveal>حساب کاربری</h1>
+    <div class="breadcrumb" data-reveal data-delay="1">
+      <a href="{% url 'home:index' %}">خانه</a>
+      <i data-lucide="chevron-left"></i>
+      <span>داشبورد</span>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:40px;">
+  <div class="container dash-wrap">
     <div class="dash-grid">
-      <aside class="dash-card profile-card" data-reveal>
-        <div class="dash-av">{% if user.profile.avatar %}<img src="{{ user.profile.avatar.url }}" alt="" />{% else %}{{ user.profile.initial }}{% endif %}</div>
-        <h3>{{ user.profile.display_name }}</h3>
-        <span class="role">{{ user.profile.role }}</span>
-        <div class="dash-actions">
-          <a href="{% url 'accounts:edit_profile' %}" class="btn btn-outline btn-block"><i data-lucide="edit"></i> ویرایش پروفایل</a>
-          <a href="{% url 'accounts:change_password' %}" class="btn btn-ghost btn-block"><i data-lucide="key"></i> تغییر رمز عبور</a>
-          {% if user.is_staff %}<a href="{% url 'panel:dashboard' %}" class="btn btn-primary btn-block"><i data-lucide="layout-dashboard"></i> پنل مدیریت</a>{% endif %}
-          <a href="{% url 'accounts:logout' %}" class="btn btn-ghost btn-block"><i data-lucide="log-out"></i> خروج</a>
+
+      <aside class="dash-side" data-reveal>
+        <div class="dash-card">
+          <div class="dash-avatar">
+            {% if user.profile.avatar %}
+              <img src="{{ user.profile.avatar.url }}" alt="{{ user.profile.display_name }}" />
+            {% else %}
+              {{ user.profile.initial }}
+            {% endif %}
+          </div>
+          <h3>{{ user.profile.display_name }}</h3>
+          <span class="role">{{ user.profile.role }}</span>
+          <div class="dash-menu">
+            <a href="{% url 'accounts:edit_profile' %}" class="btn btn-outline"><i data-lucide="edit"></i> ویرایش پروفایل</a>
+            <a href="{% url 'accounts:change_password' %}" class="btn btn-ghost"><i data-lucide="key"></i> تغییر رمز</a>
+            {% if user.is_staff %}
+              <a href="{% url 'panel:dashboard' %}" class="btn btn-primary"><i data-lucide="layout-dashboard"></i> پنل مدیریت</a>
+            {% endif %}
+            <a href="{% url 'accounts:logout' %}" class="btn btn-ghost"><i data-lucide="log-out"></i> خروج</a>
+          </div>
         </div>
       </aside>
-      <div class="dash-main">
-        <div class="dash-stats">
-          <div class="dash-stat"><i data-lucide="message-circle"></i><div><span class="n">{{ comment_count|fa_digits }}</span><span class="l">دیدگاه</span></div></div>
-          <div class="dash-stat"><i data-lucide="mail"></i><div><span class="n en">{{ user.email }}</span><span class="l">ایمیل</span></div></div>
-          <div class="dash-stat"><i data-lucide="calendar"></i><div><span class="n">{{ user.date_joined|jalali }}</span><span class="l">عضویت</span></div></div>
+
+      <div class="dash-content">
+        <div class="dash-stats" data-reveal>
+          <div class="dash-stat">
+            <i data-lucide="message-circle"></i>
+            <div>
+              <span class="val">{{ comment_count|fa_digits }}</span>
+              <span class="lbl">دیدگاه</span>
+            </div>
+          </div>
+          <div class="dash-stat">
+            <i data-lucide="mail"></i>
+            <div>
+              <span class="val">{{ user.email }}</span>
+              <span class="lbl">ایمیل</span>
+            </div>
+          </div>
+          <div class="dash-stat">
+            <i data-lucide="calendar"></i>
+            <div>
+              <span class="val">{{ user.date_joined|jalali }}</span>
+              <span class="lbl">عضویت</span>
+            </div>
+          </div>
         </div>
+
         <div class="dash-card" data-reveal>
-          <h4 style="margin-bottom:16px;"><i data-lucide="message-square"></i> آخرین دیدگاه‌های من</h4>
+          <div class="dash-comments-title">
+            <i data-lucide="message-square"></i>
+            آخرین دیدگاه‌های من
+          </div>
           {% for c in my_comments %}
-          <div class="dash-comment"><a href="{{ c.post.get_absolute_url }}">{{ c.post.title|truncatechars:50 }}</a><p>{{ c.body|truncatechars:90 }}</p><span class="c-date"><time>{{ c.created_at|jalali }}</time> {% if c.is_approved %}<span class="badge ok">تایید شده</span>{% else %}<span class="badge warn">در انتظار</span>{% endif %}</span></div>
-          {% empty %}<p style="color:var(--muted);">هنوز دیدگاهی ثبت نکرده‌اید.</p>{% endfor %}
+          <div class="dash-comment">
+            <a href="{{ c.post.get_absolute_url }}">{{ c.post.title|truncatechars:50 }}</a>
+            <p>{{ c.body|truncatechars:90 }}</p>
+            <span class="c-date">
+              <time>{{ c.created_at|jalali }}</time>
+              {% if c.is_approved %}
+                <span class="badge ok">تایید شده</span>
+              {% else %}
+                <span class="badge warn">در انتظار</span>
+              {% endif %}
+            </span>
+          </div>
+          {% empty %}
+          <p style="color:var(--muted);">هنوز دیدگاهی ثبت نکرده‌اید.</p>
+          {% endfor %}
         </div>
       </div>
+
     </div>
   </div>
 </section>
