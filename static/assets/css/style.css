@@ -538,6 +538,7 @@ textarea.input { padding: 14px 16px; resize: vertical; min-height: 140px; }
   .auth-visual { display: none; }
   .about-split { grid-template-columns: 1fr; gap: 30px; }
   .contact-grid { grid-template-columns: 1fr; }
+  .dash-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 680px) {
   .stats-band .container { grid-template-columns: 1fr 1fr; }
@@ -551,6 +552,15 @@ textarea.input { padding: 14px 16px; resize: vertical; min-height: 140px; }
   .footer-bottom { flex-direction: column; text-align: center; }
   .author-box { flex-direction: column; text-align: center; }
   .hero-stats { gap: 24px; }
+  .dash-grid { grid-template-columns: 1fr; }
+  .dash-stats { grid-template-columns: 1fr; }
+  .dash-stat .n { font-size: .9rem; word-break: break-all; }
+  .dash-actions { flex-direction: row; flex-wrap: wrap; }
+  .dash-actions .btn { flex: 1 1 calc(50% - 5px); min-width: 0; font-size: .82rem; padding: 10px 8px; }
+  .dash-card { padding: 16px; }
+  .dash-comment a { font-size: .88rem; }
+  .dash-comment p { font-size: .82rem; }
+  .badge { font-size: .68rem; }
 }
 
 
