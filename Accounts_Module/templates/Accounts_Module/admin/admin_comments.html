@@ -1,0 +1,34 @@
+{% extends "shared/admin_base.html" %}
+{% load static persian_date_tags %}
+{% block title %}دیدگاه‌ها{% endblock %}
+{% block page_title %}مدیریت دیدگاه‌ها{% endblock %}
+{% block content %}
+<div class="content-head">
+  <div class="tabs">
+    <a href="?" class="tab {% if not filter %}active{% endif %}">همه</a>
+    <a href="?filter=pending" class="tab {% if filter == 'pending' %}active{% endif %}">در انتظار تایید</a>
+    <a href="?filter=approved" class="tab {% if filter == 'approved' %}active{% endif %}">تایید شده</a>
+  </div>
+</div>
+<div class="panel-card">
+  <div class="comment-admin-list">
+    {% for c in comments %}
+    <div class="ca-item">
+      <div class="ca-av">{{ c.initial }}</div>
+      <div class="ca-body">
+        <div class="ca-head"><strong>{{ c.name }}</strong> <span class="muted">روی</span> <a href="{{ c.post.get_absolute_url }}" target="_blank">{{ c.post.title|truncatechars:36 }}</a><span class="ca-date"><time>{{ c.created_at|jalali }}</time></span></div>
+        <p>{{ c.body }}</p>
+        <div class="ca-actions">
+          {% if c.is_approved %}<span class="badge ok">تایید شده</span>
+          <form method="post" action="{% url 'panel:comment_approve' c.pk %}" style="display:inline;">{% csrf_token %}<button type="submit" class="mini-btn"><i data-lucide="x-circle"></i> لغو تایید</button></form>
+          {% else %}<span class="badge warn">در انتظار</span>
+          <form method="post" action="{% url 'panel:comment_approve' c.pk %}" style="display:inline;">{% csrf_token %}<button type="submit" class="mini-btn ok"><i data-lucide="check-circle"></i> تایید</button></form>{% endif %}
+          <form method="post" action="{% url 'panel:comment_delete' c.pk %}" style="display:inline;" onsubmit="return confirm('این دیدگاه حذف شود؟')">{% csrf_token %}<button type="submit" class="mini-btn danger"><i data-lucide="trash-2"></i> حذف</button></form>
+        </div>
+      </div>
+    </div>
+    {% empty %}<p class="empty">دیدگاهی موجود نیست.</p>{% endfor %}
+  </div>
+</div>
+{% include "shared/_pagination.html" %}
+{% endblock %}

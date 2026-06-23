@@ -1,0 +1,50 @@
+{% load static %}
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-about">
+        <a href="{% url 'home:index' %}" class="logo"><img src="{% if site.logo %}{{ site.logo.url }}{% else %}{% static 'assets/images/logo-mark.png' %}{% endif %}" alt="" /><span class="logo-txt">Ario<b>Sport</b></span></a>
+        <p>{{ site.about_short }}</p>
+        <div class="footer-social">
+          {% if site.instagram %}<a href="{{ site.instagram }}" aria-label="اینستاگرام"><i data-lucide="instagram"></i></a>{% else %}<a href="#" aria-label="اینستاگرام"><i data-lucide="instagram"></i></a>{% endif %}
+          {% if site.telegram %}<a href="{{ site.telegram }}" aria-label="تلگرام"><i data-lucide="send"></i></a>{% else %}<a href="#" aria-label="تلگرام"><i data-lucide="send"></i></a>{% endif %}
+          {% if site.twitter %}<a href="{{ site.twitter }}" aria-label="توییتر"><i data-lucide="twitter"></i></a>{% else %}<a href="#" aria-label="توییتر"><i data-lucide="twitter"></i></a>{% endif %}
+          {% if site.youtube %}<a href="{{ site.youtube }}" aria-label="یوتیوب"><i data-lucide="youtube"></i></a>{% else %}<a href="#" aria-label="یوتیوب"><i data-lucide="youtube"></i></a>{% endif %}
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>دسترسی سریع</h5>
+        <ul>
+          <li><a href="{% url 'home:index' %}"><i data-lucide="chevron-left"></i> خانه</a></li>
+          <li><a href="{% url 'blog:list' %}"><i data-lucide="chevron-left"></i> وبلاگ</a></li>
+          <li><a href="{% url 'core:about' %}"><i data-lucide="chevron-left"></i> درباره ما</a></li>
+          <li><a href="{% url 'core:contact' %}"><i data-lucide="chevron-left"></i> تماس با ما</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>دسته‌بندی‌ها</h5>
+        <ul>
+          {% for c in nav_categories|slice:":4" %}
+          <li><a href="{{ c.get_absolute_url }}"><i data-lucide="chevron-left"></i> {{ c.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="footer-news">
+        <h5>خبرنامه</h5>
+        <p>جدیدترین مقالات را در ایمیل خود دریافت کنید.</p>
+        <form class="subscribe" method="post" action="{% url 'core:newsletter_subscribe' %}">
+          {% csrf_token %}
+          <input type="email" name="email" placeholder="ایمیل شما" required />
+          <button type="submit" class="btn btn-primary">عضویت</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span class="en">{% now "Y" %}</span> {{ site.footer_text|default:"ArioSport — تمامی حقوق محفوظ است." }}</span>
+      <div class="links">
+        <a href="#">حریم خصوصی</a>
+        <a href="#">قوانین و مقررات</a>
+      </div>
+    </div>
+  </div>
+</footer>

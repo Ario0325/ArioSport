@@ -1,0 +1,30 @@
+{% extends "shared/admin_base.html" %}
+{% load static persian_date_tags %}
+{% block title %}دسته‌بندی‌ها{% endblock %}
+{% block page_title %}مدیریت دسته‌بندی‌ها{% endblock %}
+{% block content %}
+<div class="content-head"><div></div><a href="{% url 'panel:category_create' %}" class="btn btn-primary"><i data-lucide="plus"></i> دسته جدید</a></div>
+<div class="panel-card">
+  <div class="table-wrapper">
+  <table class="data-table">
+    <thead><tr><th>آیکون</th><th>نام</th><th>اسلاگ</th><th>تعداد مقاله</th><th>ترتیب</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for c in categories %}
+      <tr>
+        <td><span class="cat-ic"><i data-lucide="{{ c.icon }}"></i></span></td>
+        <td><strong>{{ c.name }}</strong></td>
+        <td class="muted en">{{ c.slug }}</td>
+        <td>{{ c.n|fa_digits }}</td>
+        <td>{{ c.order|fa_digits }}</td>
+        <td>{% if c.is_active %}<span class="badge ok">فعال</span>{% else %}<span class="badge off">غیرفعال</span>{% endif %}</td>
+        <td class="actions">
+          <a href="{% url 'panel:category_edit' c.pk %}" class="ic-act"><i data-lucide="edit"></i></a>
+          <a href="{% url 'panel:category_delete' c.pk %}" class="ic-act danger"><i data-lucide="trash-2"></i></a>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="7" class="empty">دسته‌بندی‌ای موجود نیست.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endblock %}

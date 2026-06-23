@@ -1,0 +1,59 @@
+{% extends "shared/admin_base.html" %}
+{% load static persian_date_tags %}
+{% block title %}داشبورد{% endblock %}
+{% block page_title %}داشبورد مدیریت{% endblock %}
+{% block content %}
+<div class="stat-cards">
+  <div class="stat-card"><div class="sc-ic teal"><i data-lucide="newspaper"></i></div><div class="sc-info"><span class="num">{{ stats.posts|fa_digits }}</span><span class="lbl">کل مقالات</span></div></div>
+  <div class="stat-card"><div class="sc-ic green"><i data-lucide="check-circle"></i></div><div class="sc-info"><span class="num">{{ stats.published|fa_digits }}</span><span class="lbl">منتشر شده</span></div></div>
+  <div class="stat-card"><div class="sc-ic orange"><i data-lucide="file-edit"></i></div><div class="sc-info"><span class="num">{{ stats.drafts|fa_digits }}</span><span class="lbl">پیش‌نویس</span></div></div>
+  <div class="stat-card"><div class="sc-ic blue"><i data-lucide="eye"></i></div><div class="sc-info"><span class="num">{{ stats.total_views|fa_digits }}</span><span class="lbl">بازدید کل</span></div></div>
+  <div class="stat-card"><div class="sc-ic purple"><i data-lucide="message-circle"></i></div><div class="sc-info"><span class="num">{{ stats.comments|fa_digits }}</span><span class="lbl">دیدگاه‌ها</span></div></div>
+  <div class="stat-card"><div class="sc-ic red"><i data-lucide="clock"></i></div><div class="sc-info"><span class="num">{{ stats.pending_comments|fa_digits }}</span><span class="lbl">دیدگاه در انتظار</span></div></div>
+  <div class="stat-card"><div class="sc-ic teal"><i data-lucide="users"></i></div><div class="sc-info"><span class="num">{{ stats.users|fa_digits }}</span><span class="lbl">کاربران</span></div></div>
+  <div class="stat-card"><div class="sc-ic blue"><i data-lucide="mail"></i></div><div class="sc-info"><span class="num">{{ stats.unread_messages|fa_digits }}</span><span class="lbl">پیام خوانده‌نشده</span></div></div>
+</div>
+
+<div class="admin-grid-2">
+  <div class="panel-card">
+    <div class="pc-head"><h3><i data-lucide="trending-up"></i> پربازدیدترین مقالات</h3></div>
+    <table class="data-table">
+      <thead><tr><th>عنوان</th><th>دسته</th><th>بازدید</th></tr></thead>
+      <tbody>
+        {% for p in top_posts %}
+        <tr><td><a href="{% url 'panel:post_edit' p.pk %}">{{ p.title|truncatechars:40 }}</a></td><td>{{ p.category.name }}</td><td>{{ p.views|fa_digits }}</td></tr>
+        {% empty %}<tr><td colspan="3" class="empty">مقاله‌ای موجود نیست</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="panel-card">
+    <div class="pc-head"><h3><i data-lucide="layout-grid"></i> آمار دسته‌بندی‌ها</h3></div>
+    <div class="bar-list">
+      {% for c in cat_stats %}
+      <div class="bar-row"><span class="bar-lbl">{{ c.name }}</span><div class="bar-track"><div class="bar-fill" style="width:{% widthratio c.n stats.posts 100 %}%;"></div></div><span class="bar-val">{{ c.n|fa_digits }}</span></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="admin-grid-2">
+  <div class="panel-card">
+    <div class="pc-head"><h3><i data-lucide="clock"></i> آخرین مقالات</h3><a href="{% url 'panel:posts' %}" class="pc-link">همه</a></div>
+    <table class="data-table">
+      <tbody>
+        {% for p in recent_posts %}
+        <tr><td><a href="{% url 'panel:post_edit' p.pk %}">{{ p.title|truncatechars:38 }}</a></td><td>{% if p.status == 'published' %}<span class="badge ok">منتشر</span>{% else %}<span class="badge warn">پیش‌نویس</span>{% endif %}</td><td class="muted">{{ p.created_at|jalali:"short" }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="panel-card">
+    <div class="pc-head"><h3><i data-lucide="message-square"></i> آخرین دیدگاه‌ها</h3><a href="{% url 'panel:comments' %}" class="pc-link">همه</a></div>
+    <div class="mini-comments">
+      {% for c in recent_comments %}
+      <div class="mc-item"><div class="mc-av">{{ c.initial }}</div><div><strong>{{ c.name }}</strong><p>{{ c.body|truncatechars:60 }}</p></div>{% if c.is_approved %}<span class="badge ok">تایید</span>{% else %}<span class="badge warn">انتظار</span>{% endif %}</div>
+      {% empty %}<p class="empty">دیدگاهی موجود نیست</p>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "shared/base.html" %}
+{% load static persian_date_tags %}
+{% block title %}{{ category.name }} | {{ site.site_name }}{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow"><i data-lucide="{{ category.icon }}"></i> دسته‌بندی</span>
+    <h1 data-reveal>{{ category.name }}</h1>
+    {% if category.description %}<p style="color:var(--muted); max-width:640px; margin:8px auto 0;">{{ category.description }}</p>{% endif %}
+    <div class="breadcrumb" data-reveal data-delay="1"><a href="{% url 'home:index' %}">خانه</a> <i data-lucide="chevron-left"></i> <a href="{% url 'category:list' %}">دسته‌بندی‌ها</a> <i data-lucide="chevron-left"></i> <span>{{ category.name }}</span></div>
+  </div>
+</section>
+<section class="section" style="padding-top:48px;">
+  <div class="container">
+    <div class="card-grid">
+      {% for post in posts %}{% include "shared/_post_card.html" %}{% empty %}
+        <p style="color:var(--muted);">هنوز مقاله‌ای در این دسته منتشر نشده است.</p>
+      {% endfor %}
+    </div>
+    {% include "shared/_pagination.html" %}
+  </div>
+</section>
+{% endblock %}

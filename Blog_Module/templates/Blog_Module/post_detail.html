@@ -1,0 +1,161 @@
+{% extends "shared/base.html" %}
+{% load static persian_date_tags %}
+{% block title %}{{ post.title }} | {{ site.site_name }}{% endblock %}
+{% block description %}{{ post.excerpt|default:post.content|striptags|truncatechars:155 }}{% endblock %}
+{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}
+{% block meta %}
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="{{ post.title }}" />
+  <meta property="og:description" content="{{ post.excerpt|default:post.content|striptags|truncatechars:200 }}" />
+  <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+  {% if post.cover_image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}" />{% endif %}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{ post.title }}" />
+  <meta name="twitter:description" content="{{ post.excerpt|default:post.content|striptags|truncatechars:200 }}" />
+  {% if post.cover_image %}<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}" />{% endif %}
+  <link rel="canonical" href="{{ request.build_absolute_uri }}" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{{ post.title|escapejs }}",
+    "description": "{{ post.excerpt|default:post.content|striptags|truncatechars:200|escapejs }}",
+    "datePublished": "{{ post.published_at|date:'c' }}",
+    "dateModified": "{{ post.updated_at|date:'c' }}",
+    "author": {
+      "@type": "Person",
+      "name": "{{ post.author_name|escapejs }}"
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "{{ request.build_absolute_uri }}"
+    }{% if post.cover_image %},
+    "image": "{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}"{% endif %}
+  }
+  </script>
+{% endblock %}
+
+{% block topbar %}<div class="reading-bar" id="readingBar"></div>{% endblock %}
+
+{% block content %}
+<article>
+  <header class="post-hero">
+    <div class="container">
+      <span class="cat-chip">{{ post.category.name }}</span>
+      <h1>{{ post.title }}</h1>
+      <div class="meta-row">
+        <span class="author"><span class="av">{{ post.author_initial }}</span> {{ post.author_name }}</span>
+        <span><i data-lucide="calendar"></i> <time>{{ post.published_at|jalali }}</time></span>
+        <span><i data-lucide="clock"></i> {{ post.reading_time|fa_digits }} دقیقه مطالعه</span>
+        <span><i data-lucide="eye"></i> {{ post.views|fa_digits }} بازدید</span>
+      </div>
+      <div class="post-cover">{% if post.cover_image %}<img src="{{ post.cover_image.url }}" alt="{{ post.title }}" loading="lazy" />{% else %}<img src="{% static 'assets/images/post-football.jpg' %}" alt="" loading="lazy" />{% endif %}</div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="article">
+      {% if post.excerpt %}<p><strong>{{ post.excerpt }}</strong></p>{% endif %}
+      {{ post.content|safe|linebreaks }}
+    </div>
+
+    {% if post.tags.all %}
+    <div class="tags-row">
+      <span class="lbl">برچسب‌ها:</span>
+      {% for t in post.tags.all %}<a href="{{ t.get_absolute_url }}" class="tag">{{ t.name }}</a>{% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="share-row">
+      <span class="lbl">اشتراک‌گذاری:</span>
+      <a href="https://t.me/share/url?url={{ request.build_absolute_uri }}" class="share-btn" aria-label="تلگرام"><i data-lucide="send"></i></a>
+      <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}" class="share-btn" aria-label="توییتر"><i data-lucide="twitter"></i></a>
+      <a href="#" class="share-btn" aria-label="کپی لینک" data-copy="{{ request.build_absolute_uri }}"><i data-lucide="link"></i></a>
+    </div>
+
+    {% if post.author %}
+    <div class="author-box" data-reveal>
+      <div class="av">{% if post.author.profile.avatar %}<img src="{{ post.author.profile.avatar.url }}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy" />{% else %}{{ post.author_initial }}{% endif %}</div>
+      <div>
+        <h4>{{ post.author_name }}</h4>
+        <div class="role">{{ post.author.profile.role }}</div>
+        <p>{{ post.author.profile.bio|default:"نویسنده آریو اسپورت." }}</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</article>
+
+<!-- COMMENTS -->
+<section class="section" id="comments" style="padding-top:20px;">
+  <div class="container" style="max-width:840px;">
+    <div class="section-head" style="text-align:right; max-width:none;" data-reveal>
+      <span class="eyebrow"><i data-lucide="message-circle"></i> گفتگو</span>
+      <h2>دیدگاه‌ها ({{ comments|length|fa_digits }})</h2>
+    </div>
+
+    <div class="comments-list">
+      {% for c in comments %}
+      <div class="comment-item">
+        <div class="c-av">{{ c.initial }}</div>
+        <div class="c-body">
+          <div class="c-head"><strong>{{ c.name }}</strong><span class="c-date"><time>{{ c.created_at|jalali }}</time></span></div>
+          <p>{{ c.body }}</p>
+          <button type="button" class="reply-btn" onclick="toggleReply('reply-{{ c.pk }}')"><i data-lucide="reply"></i> پاسخ</button>
+          <div id="reply-{{ c.pk }}" class="reply-form-wrap" style="display:none;margin-top:12px;">
+            <form method="post" class="comment-form">
+              {% csrf_token %}
+              <input type="hidden" name="parent" value="{{ c.pk }}" />
+              {% if not user.is_authenticated %}
+              <div class="form-row">
+                <div class="field"><label>نام</label><input type="text" name="name" class="input" placeholder="نام شما" required /></div>
+                <div class="field"><label>ایمیل</label><input type="email" name="email" class="input en" placeholder="ایمیل" /></div>
+              </div>
+              {% endif %}
+              <div class="field"><textarea name="body" class="input" rows="3" placeholder="پاسخ خود را بنویسید..." required></textarea></div>
+              <button type="submit" class="btn btn-primary"><i data-lucide="send"></i> ارسال پاسخ</button>
+              <button type="button" class="btn btn-ghost" onclick="toggleReply('reply-{{ c.pk }}')">انصراف</button>
+            </form>
+          </div>
+          {% for r in c.replies.all %}{% if r.is_approved %}
+          <div class="comment-item reply">
+            <div class="c-av">{{ r.initial }}</div>
+            <div class="c-body"><div class="c-head"><strong>{{ r.name }}</strong><span class="c-date"><time>{{ r.created_at|jalali }}</time></span></div><p>{{ r.body }}</p></div>
+          </div>
+          {% endif %}{% endfor %}
+        </div>
+      </div>
+      {% empty %}
+      <p style="color:var(--muted);">هنوز دیدگاهی ثبت نشده است. اولین نفر باشید!</p>
+      {% endfor %}
+    </div>
+
+    <div class="comment-form-wrap" style="margin-top:36px;">
+      <h3 style="margin-bottom:16px;">دیدگاه خود را بنویسید</h3>
+      <form method="post" class="comment-form">
+        {% csrf_token %}
+        {% if not user.is_authenticated %}
+        <div class="form-row">
+          <div class="field"><label>نام</label><div class="input-wrap"><i data-lucide="user"></i>{{ form.name }}</div></div>
+          <div class="field"><label>ایمیل</label><div class="input-wrap"><i data-lucide="mail"></i>{{ form.email }}</div></div>
+        </div>
+        {% endif %}
+        <div class="field"><label>دیدگاه</label>{{ form.body }}</div>
+        <button type="submit" class="btn btn-primary btn-lg"><i data-lucide="send"></i> ارسال دیدگاه</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- RELATED -->
+{% if related_posts %}
+<section class="section">
+  <div class="container">
+    <div class="section-head" style="text-align:right; max-width:none;" data-reveal><span class="eyebrow"><i data-lucide="layers"></i> مطالب مرتبط</span><h2>این مقالات را هم بخوانید</h2></div>
+    <div class="card-grid">
+      {% for post in related_posts %}{% include "shared/_post_card.html" %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

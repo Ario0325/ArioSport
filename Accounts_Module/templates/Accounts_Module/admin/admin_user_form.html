@@ -1,0 +1,22 @@
+{% extends "shared/admin_base.html" %}
+{% load static %}
+{% block title %}ویرایش کاربر{% endblock %}
+{% block page_title %}ویرایش کاربر: {{ edit_user.username }}{% endblock %}
+{% block content %}
+<form method="post" class="admin-form" style="max-width:640px;">
+  {% csrf_token %}
+  <div class="panel-card">
+    <div class="form-row-2">
+      <div class="fc-field"><label>نام</label>{{ form.first_name }}</div>
+      <div class="fc-field"><label>نام خانوادگی</label>{{ form.last_name }}</div>
+    </div>
+    <div class="fc-field"><label>ایمیل</label>{{ form.email }}{{ form.email.errors }}</div>
+    <div class="fc-check"><label>{{ form.is_staff }} دسترسی به پنل مدیریت</label></div>
+    <div class="fc-check"><label>{{ form.is_active }} حساب فعال</label></div>
+    <div class="form-buttons row">
+      <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> ذخیره</button>
+      <a href="{% url 'panel:users' %}" class="btn btn-ghost">انصراف</a>
+    </div>
+  </div>
+</form>
+{% endblock %}

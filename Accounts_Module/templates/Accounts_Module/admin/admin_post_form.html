@@ -1,0 +1,338 @@
+{% extends "shared/admin_base.html" %}
+{% load static %}
+{% block title %}{% if is_new %}مقاله جدید{% else %}ویرایش مقاله{% endif %}{% endblock %}
+{% block page_title %}{% if is_new %}ایجاد مقاله جدید{% else %}ویرایش مقاله{% endif %}{% endblock %}
+{% block extra_head %}
+<style>
+  .django-ckeditor-widget { width: 100% !important; }
+
+  /* Main chrome */
+  .cke_chrome, .cke.cke_chrome {
+    display: block !important;
+    border: 1px solid rgba(255,255,255,.1) !important;
+    border-radius: 11px !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+  }
+
+  /* Top bar & toolbar area */
+  .cke_top, .cke_inner .cke_top, .cke_bottom, .cke_inner .cke_bottom {
+    background: #121925 !important;
+    border-color: rgba(255,255,255,.08) !important;
+    padding: 6px 8px !important;
+  }
+  .cke_toolbox { background: transparent !important; }
+  .cke_toolbox_collapser { border-color: rgba(255,255,255,.1) !important; }
+  .cke_toolbox_collapser .cke_arrow { filter: invert(1) !important; }
+
+  /* Toolbar groups */
+  .cke_toolbar {
+    background: #18212f !important;
+    border: 1px solid rgba(255,255,255,.08) !important;
+    border-radius: 8px !important;
+    margin: 2px 4px !important;
+    padding: 2px !important;
+  }
+
+  /* Individual buttons */
+  .cke_button, .cke_button * {
+    background: transparent !important;
+    border: none !important;
+  }
+  .cke_button {
+    padding: 4px 6px !important;
+    border-radius: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .cke_button:hover {
+    background: rgba(24,201,100,.18) !important;
+  }
+  .cke_button_on, .cke_button_on:hover {
+    background: rgba(24,201,100,.25) !important;
+  }
+  .cke_button_disabled { opacity: 0.35 !important; }
+
+  /* Icons - make them white */
+  .cke_button_icon,
+  .cke_button .cke_button_icon,
+  .cke.cke_chrome .cke_button_icon {
+    filter: brightness(0) invert(1) !important;
+    opacity: 0.85 !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+  .cke_button:hover .cke_button_icon { opacity: 1 !important; }
+
+  /* Dropdown arrow */
+  .cke_button_arrow,
+  .cke_combo_arrow {
+    filter: brightness(0) invert(1) !important;
+    opacity: 0.7 !important;
+  }
+
+  /* Separator */
+  .cke_toolbar_separator {
+    background: rgba(255,255,255,.08) !important;
+    margin: 2px 4px !important;
+  }
+
+  /* Combo (dropdowns like Format, Font, Size) */
+  .cke_combo {
+    background: #18212f !important;
+    border: 1px solid rgba(255,255,255,.1) !important;
+    border-radius: 8px !important;
+    margin: 2px !important;
+  }
+  .cke_combo_button {
+    background: transparent !important;
+    border: none !important;
+  }
+  .cke_combo_text {
+    color: #b3c0cf !important;
+    line-height: 28px !important;
+    padding: 0 8px !important;
+    font-size: 13px !important;
+  }
+  .cke_combo:hover {
+    background: rgba(24,201,100,.1) !important;
+    border-color: rgba(24,201,100,.3) !important;
+  }
+
+  /* Editable area - WHITE background */
+  .cke_contents, .cke_contents.cke_reset {
+    background: #ffffff !important;
+    color: #222 !important;
+  }
+  .cke_contents iframe {
+    background: #ffffff !important;
+  }
+
+  /* Bottom path bar */
+  .cke_path, .cke_path.cke_reset {
+    background: #0d1219 !important;
+    border-color: rgba(255,255,255,.06) !important;
+    padding: 4px 10px !important;
+  }
+  .cke_path .cke_path_empty,
+  .cke_path_item {
+    color: #7c8a9c !important;
+  }
+  .cke_path_item:hover {
+    color: #18c964 !important;
+  }
+
+  /* Panels (dropdowns, color pickers) */
+  .cke_panel, .cke.cke_panel {
+    background: #1a2332 !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,.5) !important;
+  }
+  .cke_panel_grouptitle {
+    background: #121925 !important;
+    color: #b3c0cf !important;
+    border-bottom: 1px solid rgba(255,255,255,.06) !important;
+    font-weight: 700 !important;
+    padding: 8px 12px !important;
+  }
+  .cke_panel_listitem a,
+  .cke_panel_listitem a * {
+    color: #b3c0cf !important;
+  }
+  .cke_panel_listitem a {
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+  }
+  .cke_panel_listitem a:hover,
+  .cke_panel_listitem a.cke_selected,
+  .cke_panel_listitem a.cke_selected * {
+    background: rgba(24,201,100,.15) !important;
+    color: #fff !important;
+  }
+
+  /* Context menu */
+  .cke_menu_panel { background: #1a2332 !important; }
+  .cke_menuitem a {
+    color: #b3c0cf !important;
+    padding: 6px 12px !important;
+  }
+  .cke_menuitem a:hover {
+    background: rgba(24,201,100,.15) !important;
+    color: #fff !important;
+  }
+  .cke_menuitem .cke_icon {
+    filter: brightness(0) invert(1) !important;
+  }
+  .cke_menuseparator { background: rgba(255,255,255,.06) !important; }
+
+  /* Dialogs */
+  .cke_dialog, .cke_dialog_background_cover {
+    background: #1a2332 !important;
+  }
+  .cke_dialog {
+    border: 1px solid rgba(255,255,255,.12) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6) !important;
+  }
+  .cke_dialog_title {
+    background: #0d1219 !important;
+    color: #eaf0f6 !important;
+    font-weight: 800 !important;
+    border-bottom: 1px solid rgba(255,255,255,.06) !important;
+    padding: 14px 18px !important;
+  }
+  .cke_dialog_title .cke_dialog_close_button {
+    filter: brightness(0) invert(1) !important;
+  }
+  .cke_dialog_body {
+    background: #1a2332 !important;
+    color: #b3c0cf !important;
+  }
+  .cke_dialog_body label,
+  .cke_dialog_body .cke_dialog_ui_vbox label,
+  .cke_dialog_body span {
+    color: #b3c0cf !important;
+  }
+  .cke_dialog_body input[type="text"],
+  .cke_dialog_body textarea,
+  .cke_dialog_body select {
+    background: #121925 !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    color: #eaf0f6 !important;
+    border-radius: 8px !important;
+    padding: 8px 10px !important;
+  }
+  .cke_dialog_body input:focus,
+  .cke_dialog_body textarea:focus {
+    border-color: #18c964 !important;
+    box-shadow: 0 0 0 3px rgba(24,201,100,.15) !important;
+  }
+  .cke_dialog_footer {
+    background: #0d1219 !important;
+    border-top: 1px solid rgba(255,255,255,.06) !important;
+    padding: 12px !important;
+  }
+  .cke_dialog_ui_button {
+    background: linear-gradient(120deg, #18c964, #34e08a) !important;
+    color: #04130a !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 8px 20px !important;
+    font-weight: 700 !important;
+  }
+  .cke_dialog_ui_button:hover {
+    background: linear-gradient(120deg, #34e08a, #5af2a8) !important;
+  }
+  .cke_dialog_ui_button.cke_dialog_ui_button_cancel {
+    background: #18212f !important;
+    color: #b3c0cf !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+  }
+  .cke_dialog_tabs {
+    background: #0d1219 !important;
+    padding: 6px 6px 0 !important;
+  }
+  .cke_dialog_tab {
+    color: #7c8a9c !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 8px 8px 0 0 !important;
+    padding: 8px 14px !important;
+  }
+  .cke_dialog_tab:hover {
+    color: #b3c0cf !important;
+    background: rgba(255,255,255,.04) !important;
+  }
+  .cke_dialog_tab_selected,
+  .cke_dialog_tab_selected:hover {
+    color: #18c964 !important;
+    background: #1a2332 !important;
+    border-bottom: 2px solid #18c964 !important;
+  }
+
+  /* Resizer */
+  .cke_resizer { border-color: rgba(255,255,255,.1) !important; }
+
+  /* Scrollbar in editor panels */
+  .cke_panel_frame::-webkit-scrollbar { width: 6px !important; }
+  .cke_panel_frame::-webkit-scrollbar-track { background: #121925 !important; }
+  .cke_panel_frame::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15) !important; border-radius: 3px !important; }
+
+  /* Color button special */
+  .cke_colorbutton .cke_colorauto { border-color: rgba(255,255,255,.1) !important; }
+  .cke_colorblock { border-color: rgba(255,255,255,.1) !important; }
+  .cke_colorblock td { border-color: rgba(255,255,255,.06) !important; }
+
+  /* Admin form layout */
+  .admin-form .form-cols { grid-template-columns: 1fr 320px; }
+</style>
+{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="admin-form">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="form-cols">
+    <div class="form-main panel-card">
+      <div class="fc-field"><label>عنوان</label>{{ form.title }}{{ form.title.errors }}</div>
+      <div class="fc-field"><label>اسلاگ (نشانی)</label>{{ form.slug }}<small>خالی بگذارید تا خودکار ساخته شود</small></div>
+      <div class="fc-field"><label>خلاصه</label>{{ form.excerpt }}</div>
+      <div class="fc-field"><label>متن کامل</label>{{ form.content }}{{ form.content.errors }}</div>
+    </div>
+    <aside class="form-side">
+      <div class="panel-card">
+        <h4 class="side-h">انتشار</h4>
+        <div class="fc-field"><label>وضعیت</label>{{ form.status }}</div>
+        <div class="fc-check"><label>{{ form.is_featured }} مطلب ویژه</label></div>
+        <div class="form-buttons">
+          <button type="submit" class="btn btn-primary btn-block"><i data-lucide="save"></i> ذخیره</button>
+          <a href="{% url 'panel:posts' %}" class="btn btn-ghost btn-block">انصراف</a>
+        </div>
+      </div>
+      <div class="panel-card">
+        <h4 class="side-h">دسته و برچسب‌ها</h4>
+        <div class="fc-field"><label>دسته‌بندی</label>{{ form.category }}{{ form.category.errors }}</div>
+        <div class="fc-field"><label>برچسب‌ها</label>{{ form.tags }}<small>برای انتخاب چند مورد Ctrl را نگه دارید</small></div>
+      </div>
+      <div class="panel-card">
+        <h4 class="side-h">تصویر شاخص</h4>
+        {% if post.cover_image %}<img src="{{ post.cover_image.url }}" class="cover-preview" alt="" />{% endif %}
+        <div class="fc-field">{{ form.cover_image }}</div>
+      </div>
+    </aside>
+  </div>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<script>
+  if (typeof CKEDITOR !== 'undefined') {
+    CKEDITOR.replace('id_content', {
+      skin: 'moono-lisa',
+      language: 'fa',
+      directionality: 'rtl',
+      height: 500,
+      width: '100%',
+      allowedContent: true,
+      forcePasteAsPlainText: false,
+      filebrowserUploadUrl: '/ckeditor/upload/',
+      filebrowserBrowseUrl: '/ckeditor/browse/',
+      toolbar: [
+        { name: 'document', items: ['Source', '-', 'Preview', 'Print', '-', 'Templates'] },
+        { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+        { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll'] },
+        '/',
+        { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+        { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'] },
+        { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+        { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+        '/',
+        { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+        { name: 'colors', items: ['TextColor', 'BGColor'] },
+        { name: 'tools', items: ['Maximize', 'ShowBlocks'] }
+      ]
+    });
+  }
+</script>
+{% endblock %}

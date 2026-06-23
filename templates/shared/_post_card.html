@@ -1,0 +1,20 @@
+{% load static persian_date_tags %}
+<article class="post-card" data-reveal>
+  <a href="{{ post.get_absolute_url }}" class="post-thumb">
+    <span class="cat-chip">{{ post.category.name }}</span>
+    {% if post.cover_image %}<img src="{{ post.cover_image.url }}" alt="{{ post.title }}" loading="lazy" />
+    {% else %}<img src="{% static 'assets/images/post-football.jpg' %}" alt="{{ post.title }}" loading="lazy" />{% endif %}
+  </a>
+  <div class="post-body">
+    <div class="post-meta">
+      <span><i data-lucide="calendar"></i> <time>{{ post.published_at|jalali }}</time></span>
+      <span><i data-lucide="clock"></i> {{ post.reading_time|fa_digits }} دقیقه</span>
+    </div>
+    <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+    <p>{{ post.excerpt|default:post.content|striptags|truncatechars:120 }}</p>
+    <div class="post-foot">
+      <span class="author-mini"><span class="av">{{ post.author_initial }}</span> {{ post.author_name }}</span>
+      <a href="{{ post.get_absolute_url }}" class="read-more">ادامه <i data-lucide="arrow-left"></i></a>
+    </div>
+  </div>
+</article>

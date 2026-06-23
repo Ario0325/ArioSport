@@ -1,0 +1,36 @@
+{% extends "shared/base.html" %}
+{% load static %}
+{% block title %}تماس با ما | {{ site.site_name }}{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <h1 data-reveal>تماس با <span class="text-grad">ما</span></h1>
+    <div class="breadcrumb" data-reveal data-delay="1"><a href="{% url 'home:index' %}">خانه</a> <i data-lucide="chevron-left"></i> <span>تماس با ما</span></div>
+  </div>
+</section>
+<section class="section" style="padding-top:48px;">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info" data-reveal>
+        <div class="info-card"><div class="ic"><i data-lucide="mail"></i></div><div><h5>ایمیل</h5><span class="en">{{ site.email }}</span></div></div>
+        {% if site.phone %}<div class="info-card"><div class="ic"><i data-lucide="phone"></i></div><div><h5>تلفن</h5><span class="en">{{ site.phone }}</span></div></div>{% endif %}
+        {% if site.address %}<div class="info-card"><div class="ic"><i data-lucide="map-pin"></i></div><div><h5>آدرس</h5><span>{{ site.address }}</span></div></div>{% endif %}
+      </div>
+      <div class="contact-form-card" data-reveal data-delay="1">
+        <h2 style="font-size:1.5rem; margin-bottom:8px;">پیام خود را بفرستید</h2>
+        <p style="color:var(--muted); margin-bottom:24px;">در کمتر از <span class="en">24</span> ساعت پاسخ شما را می‌دهیم.</p>
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-row">
+            <div class="field"><label>نام و نام خانوادگی</label><div class="input-wrap"><i data-lucide="user"></i>{{ form.name }}</div></div>
+            <div class="field"><label>ایمیل</label><div class="input-wrap"><i data-lucide="mail"></i>{{ form.email }}</div></div>
+          </div>
+          <div class="field"><label>موضوع</label><div class="input-wrap"><i data-lucide="tag"></i>{{ form.subject }}</div></div>
+          <div class="field"><label>متن پیام</label>{{ form.message }}</div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg"><i data-lucide="send"></i> ارسال پیام</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

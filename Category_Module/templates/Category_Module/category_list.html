@@ -1,0 +1,22 @@
+{% extends "shared/base.html" %}
+{% load static persian_date_tags %}
+{% block title %}دسته‌بندی‌ها | {{ site.site_name }}{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <h1 data-reveal>دسته‌بندی‌های <span class="text-grad">ورزشی</span></h1>
+    <div class="breadcrumb" data-reveal data-delay="1"><a href="{% url 'home:index' %}">خانه</a> <i data-lucide="chevron-left"></i> <span>دسته‌بندی‌ها</span></div>
+  </div>
+</section>
+<section class="section" style="padding-top:48px;">
+  <div class="container">
+    <div class="cats-grid">
+      {% for c in categories %}
+      <a href="{{ c.get_absolute_url }}" class="cat-card" data-reveal data-delay="{{ forloop.counter0 }}"><div class="ic"><i data-lucide="{{ c.icon }}"></i></div><h4>{{ c.name }}</h4><span class="count">{{ c.published_post_count|fa_digits }} مقاله</span></a>
+      {% empty %}
+      <p style="color:var(--muted);">دسته‌بندی‌ای تعریف نشده است.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

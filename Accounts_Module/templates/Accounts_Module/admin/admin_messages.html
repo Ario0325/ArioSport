@@ -1,0 +1,29 @@
+{% extends "shared/admin_base.html" %}
+{% load static persian_date_tags %}
+{% block title %}پیام‌ها{% endblock %}
+{% block page_title %}پیام‌های تماس{% endblock %}
+{% block content %}
+<div class="panel-card">
+  <div class="table-wrapper">
+  <table class="data-table">
+    <thead><tr><th></th><th>فرستنده</th><th>موضوع</th><th>ایمیل</th><th>تاریخ</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for m in msgs %}
+      <tr class="{% if not m.is_read %}unread{% endif %}">
+        <td>{% if not m.is_read %}<span class="dot"></span>{% endif %}</td>
+        <td><strong>{{ m.name }}</strong></td>
+        <td><a href="{% url 'panel:message_detail' m.pk %}">{{ m.subject|truncatechars:40 }}</a></td>
+        <td class="muted en">{{ m.email }}</td>
+        <td class="muted">{{ m.created_at|jalali:"short" }}</td>
+        <td class="actions">
+          <a href="{% url 'panel:message_detail' m.pk %}" class="ic-act"><i data-lucide="eye"></i></a>
+          <a href="{% url 'panel:message_delete' m.pk %}" class="ic-act danger"><i data-lucide="trash-2"></i></a>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="6" class="empty">پیامی موجود نیست.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% include "shared/_pagination.html" %}
+{% endblock %}

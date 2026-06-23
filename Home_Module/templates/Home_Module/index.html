@@ -1,0 +1,104 @@
+{% extends "shared/base.html" %}
+{% load static persian_date_tags %}
+{% block title %}{{ site.site_name }} | مرجع حرفه‌ای اخبار و تحلیل‌های ورزشی{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"><img src="{% static 'assets/images/hero-bg.jpg' %}" alt="ورزشکار" /></div>
+  <div class="container">
+    <div class="hero-content">
+      <span class="eyebrow" data-reveal><i data-lucide="flame"></i> داغ‌ترین اخبار ورزشی روز</span>
+      <h1 data-reveal data-delay="1">جایی که <span class="text-grad">هیجان ورزش</span><br />هرگز متوقف نمی‌شود</h1>
+      <p data-reveal data-delay="2">{{ site.tagline }}</p>
+      <div class="hero-actions" data-reveal data-delay="3">
+        <a href="{% url 'blog:list' %}" class="btn btn-primary btn-lg"><i data-lucide="play"></i> شروع مطالعه</a>
+        <a href="{% url 'category:list' %}" class="btn btn-outline btn-lg">کاوش دسته‌بندی‌ها</a>
+      </div>
+      <div class="hero-stats" data-reveal data-delay="4">
+        <div class="stat"><span class="n"><span data-count="{{ stats.posts }}" data-suffix="+">0</span></span><span class="l">مقاله تخصصی</span></div>
+        <div class="stat"><span class="n"><span data-count="{{ stats.views }}">0</span></span><span class="l">بازدید کل</span></div>
+        <div class="stat"><span class="n"><span data-count="{{ stats.categories }}">0</span></span><span class="l">رشته ورزشی</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue"><div class="mouse"></div><span>اسکرول کنید</span></div>
+</section>
+
+<!-- FEATURED -->
+{% if featured %}
+<section class="section">
+  <div class="container">
+    <div class="section-head" style="text-align:right; max-width:none; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;" data-reveal>
+      <div><span class="eyebrow"><i data-lucide="star"></i> مطالب ویژه</span><h2>گزیده‌ی سردبیر</h2></div>
+      <a href="{% url 'blog:list' %}" class="read-more">مشاهده همه <i data-lucide="arrow-left"></i></a>
+    </div>
+    <div class="featured-grid">
+      <a href="{{ featured.get_absolute_url }}" class="feature-main" data-reveal>
+        {% if featured.cover_image %}<img src="{{ featured.cover_image.url }}" alt="{{ featured.title }}" loading="lazy" />{% else %}<img src="{% static 'assets/images/post-football.jpg' %}" alt="" loading="lazy" />{% endif %}
+        <div class="fc">
+          <span class="cat-chip">{{ featured.category.name }}</span>
+          <h3>{{ featured.title }}</h3>
+          <div class="post-meta">
+            <span><i data-lucide="user"></i> {{ featured.author_name }}</span>
+            <span><i data-lucide="calendar"></i> <time>{{ featured.published_at|jalali }}</time></span>
+            <span><i data-lucide="clock"></i> {{ featured.reading_time|fa_digits }} دقیقه</span>
+          </div>
+        </div>
+      </a>
+      <div class="feature-side">
+        {% for post in side_featured %}
+        <article class="post-card" data-reveal data-delay="{{ forloop.counter }}">
+          <a href="{{ post.get_absolute_url }}" class="post-thumb">{% if post.cover_image %}<img src="{{ post.cover_image.url }}" alt="" loading="lazy" />{% else %}<img src="{% static 'assets/images/post-basketball.jpg' %}" alt="" loading="lazy" />{% endif %}</a>
+          <div class="post-body">
+            <span class="cat-chip" style="position:static; align-self:flex-start;">{{ post.category.name }}</span>
+            <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+            <div class="post-meta"><span><i data-lucide="calendar"></i> <time>{{ post.published_at|jalali }}</time></span></div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- CATEGORIES -->
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow"><i data-lucide="layout-grid"></i> رشته‌های ورزشی</span><h2>دسته‌بندی‌های محبوب</h2></div>
+    <div class="cats-grid">
+      {% for c in categories %}
+      <a href="{{ c.get_absolute_url }}" class="cat-card" data-reveal data-delay="{{ forloop.counter0 }}"><div class="ic"><i data-lucide="{{ c.icon }}"></i></div><h4>{{ c.name }}</h4><span class="count">{{ c.n|fa_digits }} مقاله</span></a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAND -->
+<section class="stats-band section" style="padding-block:54px;">
+  <div class="container">
+    <div class="stat-box" data-reveal><div class="n text-grad"><span data-count="{{ stats.posts }}" data-suffix="+">0</span></div><div class="l">مقاله منتشر شده</div></div>
+    <div class="stat-box" data-reveal data-delay="1"><div class="n text-grad"><span data-count="{{ stats.views }}">0</span></div><div class="l">بازدید کل</div></div>
+    <div class="stat-box" data-reveal data-delay="2"><div class="n text-grad"><span data-count="{{ stats.authors }}">0</span></div><div class="l">نویسنده</div></div>
+    <div class="stat-box" data-reveal data-delay="3"><div class="n text-grad"><span data-count="{{ stats.categories }}">0</span></div><div class="l">رشته ورزشی</div></div>
+  </div>
+</section>
+
+<!-- LATEST -->
+<section class="section">
+  <div class="container">
+    <div class="section-head" style="text-align:right; max-width:none; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;" data-reveal>
+      <div><span class="eyebrow"><i data-lucide="clock"></i> به‌روزترین‌ها</span><h2>تازه‌ترین مقالات</h2></div>
+      <a href="{% url 'blog:list' %}" class="read-more">آرشیو کامل <i data-lucide="arrow-left"></i></a>
+    </div>
+    <div class="card-grid">
+      {% for post in latest_posts %}
+        {% include "shared/_post_card.html" %}
+      {% empty %}
+        <p style="color:var(--muted);">هنوز مقاله‌ای منتشر نشده است.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

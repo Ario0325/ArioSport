@@ -1,0 +1,43 @@
+{% extends "shared/admin_base.html" %}
+{% load static persian_date_tags %}
+{% block title %}مقالات{% endblock %}
+{% block page_title %}مدیریت مقالات{% endblock %}
+{% block content %}
+<div class="content-head">
+  <form class="toolbar" method="get">
+    <div class="search-field"><i data-lucide="search"></i><input type="text" name="q" value="{{ q }}" placeholder="جستجوی مقاله..." /></div>
+    <select name="status" class="fc-input" onchange="this.form.submit()">
+      <option value="">همه وضعیت‌ها</option>
+      <option value="published" {% if status == 'published' %}selected{% endif %}>منتشر شده</option>
+      <option value="draft" {% if status == 'draft' %}selected{% endif %}>پیش‌نویس</option>
+    </select>
+  </form>
+  <a href="{% url 'panel:post_create' %}" class="btn btn-primary"><i data-lucide="plus"></i> مقاله جدید</a>
+</div>
+
+<div class="panel-card">
+  <div class="table-wrapper">
+  <table class="data-table">
+    <thead><tr><th>عنوان</th><th>دسته</th><th>نویسنده</th><th>وضعیت</th><th>بازدید</th><th>تاریخ</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for p in posts %}
+      <tr>
+        <td><a href="{% url 'panel:post_edit' p.pk %}" class="t-title">{% if p.is_featured %}<i data-lucide="star" class="feat"></i>{% endif %}{{ p.title|truncatechars:46 }}</a></td>
+        <td>{{ p.category.name }}</td>
+        <td class="muted">{{ p.author_name }}</td>
+        <td>{% if p.status == 'published' %}<span class="badge ok">منتشر</span>{% else %}<span class="badge warn">پیش‌نویس</span>{% endif %}</td>
+        <td>{{ p.views|fa_digits }}</td>
+        <td class="muted">{{ p.created_at|jalali:"short" }}</td>
+        <td class="actions">
+          <a href="{{ p.get_absolute_url }}" target="_blank" class="ic-act" title="مشاهده"><i data-lucide="eye"></i></a>
+          <a href="{% url 'panel:post_edit' p.pk %}" class="ic-act" title="ویرایش"><i data-lucide="edit"></i></a>
+          <a href="{% url 'panel:post_delete' p.pk %}" class="ic-act danger" title="حذف"><i data-lucide="trash-2"></i></a>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="7" class="empty">مقاله‌ای یافت نشد.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% include "shared/_pagination.html" %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% load static %}
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-panel">
+    <div class="m-top">
+      <a href="{% url 'home:index' %}" class="logo"><img src="{% if site.logo %}{{ site.logo.url }}{% else %}{% static 'assets/images/logo-mark.png' %}{% endif %}" alt="" /><span class="logo-txt">Ario<b>Sport</b></span></a>
+      <button class="icon-btn" id="menuClose" aria-label="بستن"><i data-lucide="x"></i></button>
+    </div>
+    <a href="{% url 'home:index' %}" class="m-link"><i data-lucide="home"></i> خانه</a>
+    <a href="{% url 'blog:list' %}" class="m-link"><i data-lucide="newspaper"></i> وبلاگ</a>
+    <a href="{% url 'category:list' %}" class="m-link"><i data-lucide="layout-grid"></i> دسته‌بندی‌ها</a>
+    <a href="{% url 'core:about' %}" class="m-link"><i data-lucide="info"></i> درباره ما</a>
+    <a href="{% url 'core:contact' %}" class="m-link"><i data-lucide="mail"></i> تماس با ما</a>
+    <div class="m-actions">
+      {% if user.is_authenticated %}
+        <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary btn-block">حساب من</a>
+        <a href="{% url 'accounts:logout' %}" class="btn btn-ghost btn-block">خروج</a>
+      {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-ghost btn-block">ورود</a>
+        <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-block">ثبت‌نام</a>
+      {% endif %}
+    </div>
+  </div>
+</div>

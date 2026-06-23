@@ -1,0 +1,16 @@
+{% extends "shared/base.html" %}
+{% load static %}
+{% block title %}403 | {{ site.site_name }}{% endblock %}
+{% block content %}
+<section class="err-page">
+  <div class="container" style="position:relative; z-index:2; text-align:center; padding-block:120px;">
+    <div class="big text-grad">403</div>
+    <h2>دسترسی غیرمجاز</h2>
+    <p>شما اجازه دسترسی به این صفحه را ندارید.</p>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <a href="{% url 'home:index' %}" class="btn btn-primary btn-lg"><i data-lucide="home"></i> بازگشت به خانه</a>
+      <a href="{% url 'blog:list' %}" class="btn btn-outline btn-lg"><i data-lucide="newspaper"></i> مشاهده وبلاگ</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

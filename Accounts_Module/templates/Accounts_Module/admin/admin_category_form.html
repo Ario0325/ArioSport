@@ -1,0 +1,23 @@
+{% extends "shared/admin_base.html" %}
+{% load static %}
+{% block title %}{% if is_new %}دسته جدید{% else %}ویرایش دسته{% endif %}{% endblock %}
+{% block page_title %}{% if is_new %}ایجاد دسته‌بندی{% else %}ویرایش دسته‌بندی{% endif %}{% endblock %}
+{% block content %}
+<form method="post" class="admin-form" style="max-width:680px;">
+  {% csrf_token %}
+  <div class="panel-card">
+    <div class="fc-field"><label>نام دسته</label>{{ form.name }}{{ form.name.errors }}</div>
+    <div class="fc-field"><label>اسلاگ</label>{{ form.slug }}<small>خالی بگذارید تا خودکار ساخته شود</small></div>
+    <div class="fc-field"><label>آیکون (Lucide)</label>{{ form.icon }}<small>نمونه: goal, dribbble, dumbbell, volleyball, bike</small></div>
+    <div class="fc-field"><label>توضیحات</label>{{ form.description }}</div>
+    <div class="form-row-2">
+      <div class="fc-field"><label>ترتیب نمایش</label>{{ form.order }}</div>
+      <div class="fc-check" style="align-self:end;"><label>{{ form.is_active }} فعال</label></div>
+    </div>
+    <div class="form-buttons row">
+      <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> ذخیره</button>
+      <a href="{% url 'panel:categories' %}" class="btn btn-ghost">انصراف</a>
+    </div>
+  </div>
+</form>
+{% endblock %}

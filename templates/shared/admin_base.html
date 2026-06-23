@@ -1,0 +1,71 @@
+{% load static persian_date_tags %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}پنل مدیریت{% endblock %} | {{ site.site_name }}</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/png" href="{% static 'assets/images/favicon.png' %}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'assets/css/admin-panel.css' %}" />
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="admin-body">
+  <div class="admin-shell">
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-brand">
+        <a href="{% url 'panel:dashboard' %}" class="logo"><img src="{% static 'assets/images/logo-mark.png' %}" alt="" /><span class="logo-txt">Ario<b>Sport</b></span></a>
+        <button class="icon-btn sidebar-close" id="sidebarClose"><i data-lucide="x"></i></button>
+      </div>
+      <nav class="admin-nav">
+        <span class="nav-label">عمومی</span>
+        <a href="{% url 'panel:dashboard' %}" class="{% if active == 'dashboard' %}active{% endif %}"><i data-lucide="layout-dashboard"></i> داشبورد</a>
+        <span class="nav-label">محتوا</span>
+        <a href="{% url 'panel:posts' %}" class="{% if active == 'posts' %}active{% endif %}"><i data-lucide="newspaper"></i> مقالات</a>
+        <a href="{% url 'panel:categories' %}" class="{% if active == 'categories' %}active{% endif %}"><i data-lucide="layout-grid"></i> دسته‌بندی‌ها</a>
+        <a href="{% url 'panel:tags' %}" class="{% if active == 'tags' %}active{% endif %}"><i data-lucide="tag"></i> برچسب‌ها</a>
+        <a href="{% url 'panel:comments' %}" class="{% if active == 'comments' %}active{% endif %}"><i data-lucide="message-circle"></i> دیدگاه‌ها {% if pending_comments_count %}<span class="nav-badge">{{ pending_comments_count|fa_digits }}</span>{% endif %}</a>
+        <span class="nav-label">کاربران</span>
+        <a href="{% url 'panel:users' %}" class="{% if active == 'users' %}active{% endif %}"><i data-lucide="users"></i> کاربران</a>
+        <a href="{% url 'panel:messages' %}" class="{% if active == 'messages' %}active{% endif %}"><i data-lucide="mail"></i> پیام‌ها {% if unread_messages_count %}<span class="nav-badge">{{ unread_messages_count|fa_digits }}</span>{% endif %}</a>
+        <span class="nav-label">سیستم</span>
+        <a href="{% url 'panel:settings' %}" class="{% if active == 'settings' %}active{% endif %}"><i data-lucide="settings"></i> تنظیمات سایت</a>
+        <a href="{% url 'home:index' %}"><i data-lucide="external-link"></i> مشاهده سایت</a>
+        <a href="{% url 'accounts:logout' %}"><i data-lucide="log-out"></i> خروج</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <button class="icon-btn" id="sidebarOpen"><i data-lucide="menu"></i></button>
+        <h1 class="topbar-title">{% block page_title %}پنل مدیریت{% endblock %}</h1>
+        <div class="topbar-actions">
+          <a href="{% url 'panel:messages' %}" class="icon-btn" aria-label="پیام‌ها"><i data-lucide="bell"></i>{% if unread_messages_count %}<span class="dot"></span>{% endif %}</a>
+          <div class="topbar-user"><span class="av">{{ user.profile.initial }}</span><span class="name">{{ user.profile.display_name }}</span></div>
+        </div>
+      </header>
+
+      {% if messages %}
+      <div class="admin-flash-stack">
+        {% for m in messages %}<div class="flash flash-{{ m.tags }}"><i data-lucide="info"></i><span>{{ m }}</span><button class="flash-x">&times;</button></div>{% endfor %}
+      </div>
+      {% endif %}
+
+      <main class="admin-content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+  <script src="{% static 'assets/js/admin.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

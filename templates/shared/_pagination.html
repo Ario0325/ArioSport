@@ -1,0 +1,18 @@
+{% load persian_date_tags %}
+{% if posts.paginator.num_pages > 1 %}
+<nav class="pagination" aria-label="صفحه‌بندی">
+  {% if posts.has_previous %}
+    <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ posts.previous_page_number }}" aria-label="قبلی"><i data-lucide="chevron-right"></i></a>
+  {% endif %}
+  {% for num in posts.paginator.page_range %}
+    {% if num == posts.number %}
+      <a href="#" class="active">{{ num|fa_digits }}</a>
+    {% elif num >= posts.number|add:-2 and num <= posts.number|add:2 %}
+      <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ num }}">{{ num|fa_digits }}</a>
+    {% endif %}
+  {% endfor %}
+  {% if posts.has_next %}
+    <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ posts.next_page_number }}" aria-label="بعدی"><i data-lucide="chevron-left"></i></a>
+  {% endif %}
+</nav>
+{% endif %}

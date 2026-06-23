@@ -1,0 +1,26 @@
+{% extends "shared/base.html" %}
+{% load static %}
+{% block title %}ویرایش پروفایل | {{ site.site_name }}{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><h1 data-reveal>ویرایش پروفایل</h1>
+  <div class="breadcrumb" data-reveal data-delay="1"><a href="{% url 'accounts:dashboard' %}">داشبورد</a> <i data-lucide="chevron-left"></i> <span>ویرایش پروفایل</span></div></div></section>
+<section class="section" style="padding-top:40px;">
+  <div class="container" style="max-width:680px;">
+    <div class="auth-card" style="margin:0;">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="field"><label>نام</label>{{ form.first_name }}</div>
+          <div class="field"><label>نام خانوادگی</label>{{ form.last_name }}</div>
+        </div>
+        <div class="field"><label>ایمیل</label>{{ form.email }}</div>
+        <div class="field"><label>سمت / تخصص</label>{{ form.role }}</div>
+        <div class="field"><label>تلفن</label>{{ form.phone }}</div>
+        <div class="field"><label>بیوگرافی</label>{{ form.bio }}</div>
+        <div class="field"><label>تصویر پروفایل</label>{{ form.avatar }}</div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg"><i data-lucide="save"></i> ذخیره تغییرات</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

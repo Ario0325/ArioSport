@@ -1,0 +1,35 @@
+{% extends "shared/auth_base.html" %}
+{% load static %}
+{% block title %}ورود | {{ site.site_name }}{% endblock %}
+{% block content %}
+<main class="auth">
+  <aside class="auth-visual">
+    <img src="{% static 'assets/images/post-running.jpg' %}" alt="ورزشکار" />
+    <div class="v-content">
+      <a href="{% url 'home:index' %}" class="logo" style="margin-bottom:26px;"><img src="{% static 'assets/images/logo-mark.png' %}" alt="" /><span class="logo-txt">Ario<b>Sport</b></span></a>
+      <h2>دوباره خوش آمدی، قهرمان!</h2>
+      <p>وارد شو و به دنیای بی‌پایان اخبار، تحلیل‌ها و مقالات ورزشی دسترسی پیدا کن.</p>
+    </div>
+  </aside>
+  <section class="auth-form-wrap">
+    <div class="auth-card">
+      <h1>ورود به حساب</h1>
+      <p class="sub">خوش آمدی! لطفاً اطلاعات خود را وارد کن.</p>
+      {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
+      <form method="post">
+        {% csrf_token %}
+        {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}" />{% endif %}
+        <div class="field"><label>ایمیل</label><div class="input-wrap"><i data-lucide="mail"></i>{{ form.username }}</div>{{ form.username.errors }}</div>
+        <div class="field"><label>رمز عبور</label><div class="input-wrap"><i data-lucide="lock"></i>{{ form.password }}<button type="button" class="toggle-pass" aria-label="نمایش رمز"><i data-lucide="eye"></i></button></div>{{ form.password.errors }}</div>
+        <div class="checkbox-row" style="margin-bottom:22px;">
+          <label><input type="checkbox" name="remember" /> مرا به خاطر بسپار</label>
+          <a href="{% url 'accounts:password_reset' %}" style="color:var(--primary-2); font-weight:600;">فراموشی رمز؟</a>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg"><i data-lucide="log-in"></i> ورود</button>
+      </form>
+      <div class="auth-foot">حساب کاربری ندارید؟ <a href="{% url 'accounts:register' %}">ثبت‌نام کنید</a></div>
+      <div style="text-align:center; margin-top:18px;"><a href="{% url 'home:index' %}" style="color:var(--muted); font-size:.88rem;"><i data-lucide="arrow-right" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> بازگشت به خانه</a></div>
+    </div>
+  </section>
+</main>
+{% endblock %}

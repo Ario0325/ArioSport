@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}{{ site.site_name|default:"ArioSport" }} | مرجع حرفه‌ای اخبار و تحلیل‌های ورزشی{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ site.tagline }}{% endblock %}" />
+  <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}" />
+  <meta name="theme-color" content="#080b10" />
+  <meta property="og:site_name" content="{{ site.site_name|default:'ArioSport' }}" />
+  <meta property="og:title" content="{% block og_title %}{{ site.site_name|default:'ArioSport' }}{% endblock %}" />
+  <meta property="og:description" content="{% block og_description %}{{ site.tagline }}{% endblock %}" />
+  <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+  {% block meta %}<meta property="og:type" content="website" />{% endblock %}
+  <link rel="icon" type="image/png" href="{% if site.favicon %}{{ site.favicon.url }}{% else %}{% static 'assets/images/favicon.png' %}{% endif %}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  {% block topbar %}{% endblock %}
+
+  {% include "shared/navbar.html" %}
+  {% include "shared/mobile_menu.html" %}
+
+  {% if messages %}
+  <div class="flash-stack" id="flashStack">
+    {% for m in messages %}
+      <div class="flash flash-{{ m.tags }}">
+        <i data-lucide="info"></i><span>{{ m }}</span>
+        <button class="flash-x" aria-label="بستن">&times;</button>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  {% include "shared/footer.html" %}
+
+  <button class="to-top" id="toTop" aria-label="بازگشت به بالا"><i data-lucide="arrow-up"></i></button>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

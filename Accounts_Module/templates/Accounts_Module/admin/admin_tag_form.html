@@ -1,0 +1,16 @@
+{% extends "shared/admin_base.html" %}
+{% load static %}
+{% block title %}{% if is_new %}برچسب جدید{% else %}ویرایش برچسب{% endif %}{% endblock %}
+{% block page_title %}{% if is_new %}ایجاد برچسب{% else %}ویرایش برچسب{% endif %}{% endblock %}
+{% block content %}
+<form method="post" class="admin-form" style="max-width:500px;">
+  {% csrf_token %}
+  <div class="panel-card">
+    <div class="fc-field"><label>نام برچسب</label>{{ form.name }}{{ form.name.errors }}</div>
+    <div class="form-buttons row">
+      <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> ذخیره</button>
+      <a href="{% url 'panel:tags' %}" class="btn btn-ghost">انصراف</a>
+    </div>
+  </div>
+</form>
+{% endblock %}

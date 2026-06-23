@@ -1,0 +1,40 @@
+{% load static %}
+<header class="navbar" id="navbar">
+  <div class="container">
+    <a href="{% url 'home:index' %}" class="logo" aria-label="{{ site.site_name }}">
+      <img src="{% if site.logo %}{{ site.logo.url }}{% else %}{% static 'assets/images/logo-mark.png' %}{% endif %}" alt="{{ site.site_name }}" />
+      <span class="logo-txt">Ario<b>Sport</b></span>
+    </a>
+    <nav aria-label="ناوبری اصلی">
+      <ul class="nav-links">
+        <li><a href="{% url 'home:index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}"><i data-lucide="home"></i> خانه</a></li>
+        <li><a href="{% url 'blog:list' %}" class="{% if request.resolver_match.app_name == 'blog' %}active{% endif %}"><i data-lucide="newspaper"></i> وبلاگ</a></li>
+        <li class="has-drop">
+          <a href="{% url 'category:list' %}"><i data-lucide="layout-grid"></i> دسته‌بندی‌ها <i data-lucide="chevron-down"></i></a>
+          <div class="dropdown">
+            {% for c in nav_categories %}
+              <a href="{{ c.get_absolute_url }}"><i data-lucide="{{ c.icon }}"></i> {{ c.name }}</a>
+            {% empty %}
+              <a href="{% url 'category:list' %}"><i data-lucide="layout-grid"></i> همه دسته‌ها</a>
+            {% endfor %}
+          </div>
+        </li>
+        <li><a href="{% url 'core:about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}"><i data-lucide="info"></i> درباره ما</a></li>
+        <li><a href="{% url 'core:contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}"><i data-lucide="mail"></i> تماس با ما</a></li>
+      </ul>
+    </nav>
+    <div class="nav-actions">
+      <a href="{% url 'blog:search' %}" class="icon-btn" aria-label="جستجو"><i data-lucide="search"></i></a>
+      {% if user.is_authenticated %}
+        {% if user.is_staff %}
+          <a href="{% url 'panel:dashboard' %}" class="btn btn-ghost"><i data-lucide="layout-dashboard"></i> پنل مدیریت</a>
+        {% endif %}
+        <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary"><i data-lucide="user"></i> حساب من</a>
+      {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-ghost">ورود</a>
+        <a href="{% url 'accounts:register' %}" class="btn btn-primary">ثبت‌نام</a>
+      {% endif %}
+      <button class="icon-btn hamburger" id="menuOpen" aria-label="منو"><i data-lucide="menu"></i></button>
+    </div>
+  </div>
+</header>

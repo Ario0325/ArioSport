@@ -1,0 +1,32 @@
+{% extends "shared/admin_base.html" %}
+{% load static persian_date_tags %}
+{% block title %}کاربران{% endblock %}
+{% block page_title %}مدیریت کاربران{% endblock %}
+{% block content %}
+<div class="content-head">
+  <form class="toolbar" method="get"><div class="search-field"><i data-lucide="search"></i><input type="text" name="q" value="{{ q }}" placeholder="جستجوی کاربر..." /></div></form>
+</div>
+<div class="panel-card">
+  <div class="table-wrapper">
+  <table class="data-table">
+    <thead><tr><th>کاربر</th><th>ایمیل</th><th>نقش</th><th>وضعیت</th><th>عضویت</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td><div class="user-cell"><span class="u-av">{{ u.profile.initial|default:u.username|slice:":1" }}</span><span>{{ u.get_full_name|default:u.username }}</span></div></td>
+        <td class="muted en">{{ u.email }}</td>
+        <td>{% if u.is_superuser %}<span class="badge purple">مدیر کل</span>{% elif u.is_staff %}<span class="badge teal">مدیر</span>{% else %}<span class="badge">کاربر</span>{% endif %}</td>
+        <td>{% if u.is_active %}<span class="badge ok">فعال</span>{% else %}<span class="badge off">غیرفعال</span>{% endif %}</td>
+        <td class="muted">{{ u.date_joined|jalali:"short" }}</td>
+        <td class="actions">
+          <a href="{% url 'panel:user_edit' u.pk %}" class="ic-act"><i data-lucide="edit"></i></a>
+          {% if u != request.user %}<a href="{% url 'panel:user_delete' u.pk %}" class="ic-act danger"><i data-lucide="trash-2"></i></a>{% endif %}
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="6" class="empty">کاربری یافت نشد.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% include "shared/_pagination.html" %}
+{% endblock %}

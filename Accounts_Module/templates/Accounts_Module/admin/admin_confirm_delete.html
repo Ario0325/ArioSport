@@ -1,0 +1,16 @@
+{% extends "shared/admin_base.html" %}
+{% load static %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="panel-card confirm-card">
+  <div class="confirm-ic"><i data-lucide="alert-triangle"></i></div>
+  <h3>{{ title }}</h3>
+  <p>آیا از حذف «<strong>{{ name }}</strong>» مطمئن هستید؟ این عملیات قابل بازگشت نیست.</p>
+  <form method="post" class="confirm-actions">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger"><i data-lucide="trash-2"></i> بله، حذف کن</button>
+    <a href="{% url cancel_url %}" class="btn btn-ghost">انصراف</a>
+  </form>
+</div>
+{% endblock %}
