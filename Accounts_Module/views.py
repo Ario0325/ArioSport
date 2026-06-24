@@ -63,7 +63,6 @@ def register_view(request):
                 user = form.save(commit=False)
                 user.is_active = False
                 user.save()
-                form.save_m2m()
 
             otp = EmailOTP.create_otp(
                 email=user.email,
