@@ -1,0 +1,106 @@
+=====================================
+راهنمای تست سیستم OTP آریو اسپورت
+=====================================
+
+مرحله ۱: تست سلامت Cloudflare Worker
+------------------------------------
+در ترمینال PythonAnywhere اجرا کنید:
+
+    curl https://ariosport-proxy.mimoomim456.workers.dev/api/health
+
+جواب باید چیزی مثل این باشد:
+    {"status":"ok","service":"ArioSport Proxy","timestamp":"..."}
+
+اگر جواب نگرفتید = ورکر کلادفلر مشکل دارد.
+
+
+مرحله ۲: تست اتصال به n8n از طریق Worker
+------------------------------------------
+    curl -X POST https://ariosport-proxy.mimoomim456.workers.dev/proxy/n8n/auth-event \
+      -H "Content-Type: application/json" \
+      -d '{"event":"register","email":"ایمیل_خودتان","username":"Test","code":"111111","secret_token":"ario-shop-secret-token"}'
+
+جواب موفق:
+    {"status":"ok","message":"email sent"}
+
+جواب ناموفق (ورک‌فلو n8n غیرفعال):
+    {"code":404,"message":"The requested webhook is not registered..."}
+
+اگر این خطا را گرفتید → بروید به n8n و ورک‌فلو را Active کنید.
+
+
+مرحله ۳: تست از داخل Django
+----------------------------
+بعد از git pull و migrate، در ترمینال PythonAnywhere:
+
+    python manage.py shell
+
+در شل پایتون:
+
+    from Accounts_Module.n8n_utils import send_auth_event
+    result = send_auth_event(
+        event="register",
+        email="ایمیل_خودتان@test.com",
+        username="Test User",
+        code="123456"
+    )
+    print("Result:", result)
+
+اگر True برگشت = ارسال موفق
+اگر False برگشت = مشکل در اتصال
+
+برای بررسی لاگ خطا:
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+    # دوباره کد بالا را اجرا کنید
+
+
+مرحله ۴: تست کامل از طریق مرورگر
+----------------------------------
+1. به https://ariosport.pythonanywhere.com/accounts/register/ بروید
+2. یک ایمیل تستی وارد کنید
+3. ثبت‌نام کنید
+4. باید به صفحه کد OTP هدایت شوید
+5. ایمیل خود را چک کنید (inbox و spam)
+6. کد را وارد کنید
+7. باید حساب فعال شود
+
+
+مرحله ۵: تست بازیابی رمز عبور
+------------------------------
+1. به https://ariosport.pythonanywhere.com/accounts/password/reset/ بروید
+2. ایمیل خود را وارد کنید
+3. باید به صفحه کد OTP هدایت شوید
+4. ایمیل خود را چک کنید
+5. کد را وارد کنید
+6. باید فرم رمز جدید نمایش داده شود
+
+
+مرحله ۶: تست PWA
+-----------------
+1. سایت را در مرورگر موبایل باز کنید
+2. باید گزینه "Add to Home Screen" نمایش داده شود
+3. سایت را به صفحه اصلی اضافه کنید
+4. از صفحه اصلی باز کنید - باید بدون نوار مرورگر باز شود
+
+
+عیب‌یابی سریع
+--------------
+مشکل: ایمیل ارسال نمی‌شود
+→ مرحله ۲ را تست کنید
+→ لاگ‌های n8n را چک کنید (بخش Executions)
+→ مطمئن شوید Gmail credential در n8n درست است
+
+مشکل: "no such table" خطا
+→ python manage.py migrate
+
+مشکل: "Invalid HTTP_HOST"
+→ مطمئن شوید git pull کرده‌اید
+
+مشکل: صفحه بازیابی رمز لینک می‌فرستد نه کد
+→ git pull کرده‌اید؟
+→ سرور ری‌لود شده؟ (در PythonAnywhere بخش Web → Reload)
+
+مشکل: PWA کار نمی‌کند
+→ فایل‌ها بعد از git pull باید در دسترس باشند
+→ در مرورگر F12 → Application → Manifest را چک کنید
