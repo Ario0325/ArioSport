@@ -65,6 +65,36 @@ class PasswordResetRequestForm(forms.Form):
     )
 
 
+class CustomSetPasswordForm(forms.Form):
+    new_password1 = forms.CharField(
+        label="رمز عبور جدید",
+        widget=forms.PasswordInput(attrs={**INPUT, "placeholder": "حداقل ۸ کاراکتر", "autofocus": True}),
+    )
+    new_password2 = forms.CharField(
+        label="تکرار رمز عبور جدید",
+        widget=forms.PasswordInput(attrs={**INPUT, "placeholder": "رمز عبور را دوباره وارد کنید"}),
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean_new_password2(self):
+        p1 = self.cleaned_data.get("new_password1")
+        p2 = self.cleaned_data.get("new_password2")
+        if p1 and p2 and p1 != p2:
+            raise forms.ValidationError("رمزهای عبور مطابقت ندارند.")
+        from django.contrib.auth.password_validation import validate_password
+        validate_password(p2, self.user)
+        return p2
+
+    def save(self, commit=True):
+        self.user.set_password(self.cleaned_data["new_password1"])
+        if commit:
+            self.user.save()
+        return self.user
+
+
 class LoginForm(AuthenticationForm):
     username = forms.CharField(label="ایمیل",
         widget=forms.TextInput(attrs={**INPUT_EN, "placeholder": "you@email.com", "autofocus": True}))

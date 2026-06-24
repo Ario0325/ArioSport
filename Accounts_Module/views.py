@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils.http import url_has_allowed_host_and_scheme
-from .forms import RegisterForm, LoginForm, EditProfileForm, OTPVerificationForm, PasswordChangeRequestForm, PasswordResetRequestForm
+from .forms import RegisterForm, LoginForm, EditProfileForm, OTPVerificationForm, PasswordChangeRequestForm, PasswordResetRequestForm, CustomSetPasswordForm
 from .models import EmailOTP
 from .n8n_utils import send_auth_event
 
@@ -266,7 +266,7 @@ def password_reset_set_new(request):
         return redirect("accounts:password_reset")
 
     if request.method == "POST":
-        form = SetPasswordForm(user, request.POST)
+        form = CustomSetPasswordForm(user, request.POST)
         if form.is_valid():
             form.save()
             request.session.pop("otp_verified", None)
@@ -274,5 +274,5 @@ def password_reset_set_new(request):
             messages.success(request, "رمز عبور شما با موفقیت تغییر کرد. اکنون می‌توانید وارد شوید.")
             return redirect("accounts:login")
     else:
-        form = SetPasswordForm(user)
+        form = CustomSetPasswordForm(user)
     return render(request, "Accounts_Module/password_reset_confirm.html", {"form": form})
