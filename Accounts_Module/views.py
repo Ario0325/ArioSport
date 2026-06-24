@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils.http import url_has_allowed_host_and_scheme
-from .forms import RegisterForm, LoginForm, EditProfileForm, OTPVerificationForm, PasswordChangeRequestForm
+from .forms import RegisterForm, LoginForm, EditProfileForm, OTPVerificationForm, PasswordChangeRequestForm, PasswordResetRequestForm
 from .models import EmailOTP
 from .n8n_utils import send_auth_event
 
@@ -111,9 +111,10 @@ def verify_otp(request):
                     return redirect("accounts:dashboard")
                 elif purpose == "password_reset":
                     request.session["otp_verified"] = True
+                    request.session["reset_email"] = email
                     del request.session["otp_email"]
                     del request.session["otp_purpose"]
-                    return redirect("accounts:change_password")
+                    return redirect("accounts:password_reset_set_new")
             else:
                 messages.error(request, "کد تایید نامعتبر یا منقضی شده است.")
     else:
@@ -221,3 +222,58 @@ def change_password(request):
     else:
         form = PasswordChangeForm(request.user)
     return render(request, "Accounts_Module/change_password.html", {"form": form})
+
+
+def password_reset_request(request):
+    if request.user.is_authenticated:
+        return redirect("accounts:dashboard")
+    if request.method == "POST":
+        form = PasswordResetRequestForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            user = User.objects.filter(email__iexact=email, is_active=True).first()
+
+            if user:
+                otp = EmailOTP.create_otp(
+                    email=email,
+                    purpose="password_reset",
+                    user=user,
+                    expiry_minutes=15,
+                )
+                send_auth_event(
+                    event="password_reset",
+                    email=email,
+                    username=user.get_full_name() or user.username,
+                    code=otp.code,
+                )
+
+            request.session["otp_email"] = email
+            request.session["otp_purpose"] = "password_reset"
+            return redirect("accounts:verify_otp")
+    else:
+        form = PasswordResetRequestForm()
+    return render(request, "Accounts_Module/password_reset.html", {"form": form})
+
+
+def password_reset_set_new(request):
+    if not request.session.get("otp_verified") or not request.session.get("reset_email"):
+        messages.error(request, "لطفاً ابتدا ایمیل خود را تایید کنید.")
+        return redirect("accounts:password_reset")
+
+    email = request.session["reset_email"]
+    user = User.objects.filter(email__iexact=email).first()
+    if not user:
+        messages.error(request, "کاربری با این ایمیل یافت نشد.")
+        return redirect("accounts:password_reset")
+
+    if request.method == "POST":
+        form = SetPasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+            request.session.pop("otp_verified", None)
+            request.session.pop("reset_email", None)
+            messages.success(request, "رمز عبور شما با موفقیت تغییر کرد. اکنون می‌توانید وارد شوید.")
+            return redirect("accounts:login")
+    else:
+        form = SetPasswordForm(user)
+    return render(request, "Accounts_Module/password_reset_confirm.html", {"form": form})

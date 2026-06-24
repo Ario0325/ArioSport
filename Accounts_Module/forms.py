@@ -58,6 +58,13 @@ class PasswordChangeRequestForm(forms.Form):
     pass
 
 
+class PasswordResetRequestForm(forms.Form):
+    email = forms.EmailField(
+        label="ایمیل",
+        widget=forms.EmailInput(attrs={**INPUT_EN, "placeholder": "you@email.com", "autofocus": True}),
+    )
+
+
 class LoginForm(AuthenticationForm):
     username = forms.CharField(label="ایمیل",
         widget=forms.TextInput(attrs={**INPUT_EN, "placeholder": "you@email.com", "autofocus": True}))
