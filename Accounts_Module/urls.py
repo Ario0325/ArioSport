@@ -11,6 +11,8 @@ urlpatterns = [
     path("dashboard/", views.dashboard, name="dashboard"),
     path("profile/edit/", views.edit_profile, name="edit_profile"),
     path("password/change/", views.change_password, name="change_password"),
+    path("verify-otp/", views.verify_otp, name="verify_otp"),
+    path("resend-otp/", views.resend_otp, name="resend_otp"),
 
     # Password reset flow (uses Core templates)
     path("password/reset/", auth_views.PasswordResetView.as_view(

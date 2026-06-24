@@ -6,5 +6,11 @@ compatibility_date = "2024-12-01"
 # آدرس سایت جنگو روی PythonAnywhere
 DJANGO_ORIGIN = "https://ariosport.pythonanywhere.com"
 
-# مسیرهای مجاز برای پروکسی (امنیت)
+# مسیرهای مجاز برای پروکسی به Django (امنیت)
 ALLOWED_PATHS = "/api/posts/create/,/api/categories/,/api/health/"
+
+# آدرس وب‌هوک n8n برای OTP
+N8N_WEBHOOK_URL = "https://ariosport.app.n8n.cloud/webhook/django-auth-event"
+
+# توکن امنیتی (باید با settings.py و n8n یکسان باشد)
+N8N_SECRET_TOKEN = "ario-shop-secret-token"

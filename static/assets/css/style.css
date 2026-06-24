@@ -66,11 +66,18 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; colo
 button { cursor: pointer; border: none; background: none; }
 
 /* English glyphs & numerals */
-.en, time, .num {
+.en, .num {
   font-family: var(--font-en);
   direction: ltr;
   unicode-bidi: isolate;
   font-feature-settings: "tnum";
+}
+
+time {
+  font-family: var(--font-fa);
+  direction: rtl;
+  unicode-bidi: isolate;
+  white-space: nowrap;
 }
 
 ::selection { background: var(--primary); color: #04130a; }
@@ -646,3 +653,40 @@ textarea.input { padding: 14px 16px; resize: vertical; min-height: 140px; }
 .contact-form-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:26px;}
 .form-error{background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.3);padding:11px 14px;border-radius:11px;margin-bottom:16px;font-size:.88rem;}
 .auth.single{grid-template-columns:1fr;}
+
+/* OTP Input & Timer */
+.otp-input{
+  text-align:center;
+  font-size:1.6rem;
+  font-weight:700;
+  letter-spacing:12px;
+  font-family:var(--font-en);
+  padding:14px 10px;
+}
+.otp-actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:18px;
+  gap:12px;
+}
+.btn-link{
+  background:none;
+  border:none;
+  color:var(--primary-2);
+  font-size:.88rem;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-family:inherit;
+  padding:0;
+}
+.btn-link:hover{text-decoration:underline;}
+.otp-timer{
+  color:var(--muted);
+  font-size:.92rem;
+  font-family:var(--font-en);
+  font-weight:600;
+  direction:ltr;
+}

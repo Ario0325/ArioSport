@@ -5,6 +5,8 @@ from .models import Profile
 
 INPUT = {"class": "input"}
 INPUT_EN = {"class": "input en"}
+INPUT_OTP = {"class": "input otp-input", "maxlength": "6", "autocomplete": "one-time-code",
+             "inputmode": "numeric", "placeholder": "------", "dir": "ltr"}
 
 
 class RegisterForm(forms.ModelForm):
@@ -13,7 +15,7 @@ class RegisterForm(forms.ModelForm):
     email = forms.EmailField(label="ایمیل",
         widget=forms.EmailInput(attrs={**INPUT_EN, "placeholder": "you@email.com"}))
     password = forms.CharField(label="رمز عبور",
-        widget=forms.PasswordInput(attrs={**INPUT, "placeholder": "حداقل ۶ کاراکتر"}))
+        widget=forms.PasswordInput(attrs={**INPUT, "placeholder": "حداقل ۸ کاراکتر"}))
     agree = forms.BooleanField(label="قوانین را می‌پذیرم", required=True)
 
     class Meta:
@@ -22,7 +24,7 @@ class RegisterForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data["email"]
-        if User.objects.filter(email__iexact=email).exists():
+        if User.objects.filter(email__iexact=email, is_active=True).exists():
             raise forms.ValidationError("این ایمیل قبلاً ثبت شده است.")
         return email
 
@@ -35,6 +37,25 @@ class RegisterForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class OTPVerificationForm(forms.Form):
+    code = forms.CharField(
+        label="کد تایید",
+        max_length=6,
+        min_length=6,
+        widget=forms.TextInput(attrs=INPUT_OTP),
+    )
+
+    def clean_code(self):
+        code = self.cleaned_data["code"]
+        if not code.isdigit():
+            raise forms.ValidationError("کد تایید باید فقط شامل اعداد باشد.")
+        return code
+
+
+class PasswordChangeRequestForm(forms.Form):
+    pass
 
 
 class LoginForm(AuthenticationForm):

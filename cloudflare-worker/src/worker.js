@@ -2,14 +2,15 @@
  * ArioSport Cloudflare Worker Proxy
  *
  * این Worker به عنوان واسط بین n8n و PythonAnywhere عمل می‌کند.
- * مسیر:
+ * مسیرها:
  *   n8n → Cloudflare Worker → PythonAnywhere (Django API)
- *   PythonAnywhere → Cloudflare Worker → n8n (اختیاری)
+ *   PythonAnywhere → Cloudflare Worker → n8n (OTP webhook)
  *
  * مسیرهای مجاز:
- *   POST /api/posts/create/  → ساخت مقاله جدید
- *   GET  /api/categories/    → لیست دسته‌بندی‌ها
- *   GET  /api/health/        → بررسی سلامت
+ *   POST /api/posts/create/        → ساخت مقاله جدید
+ *   GET  /api/categories/          → لیست دسته‌بندی‌ها
+ *   GET  /api/health/              → بررسی سلامت
+ *   POST /proxy/n8n/auth-event     → ارسال OTP به n8n
  */
 
 export default {
@@ -30,7 +31,12 @@ export default {
       );
     }
 
-    // --- بررسی مسیر مجاز ---
+    // --- پروکسی OTP به n8n ---
+    if (path === "/proxy/n8n/auth-event" || path === "/proxy/n8n/auth-event/") {
+      return proxyToN8n(request, env);
+    }
+
+    // --- بررسی مسیر مجاز (پروکسی به Django) ---
     const allowedPaths = (env.ALLOWED_PATHS || "").split(",").map(p => p.trim());
     const isAllowed = allowedPaths.some(ap => path === ap || path === ap.replace(/\/$/, ""));
 
@@ -52,17 +58,14 @@ export default {
 
     const targetUrl = djangoOrigin + path + url.search;
 
-    // کپی هدرها
     const headers = new Headers();
     for (const [key, value] of request.headers) {
-      // هدرهای امنیتی را کپی نکن
       const skipHeaders = ["host", "origin", "referer", "cf-connecting-ip", "cf-ray", "cf-visitor"];
       if (!skipHeaders.includes(key.toLowerCase())) {
         headers.set(key, value);
       }
     }
 
-    // هدر مخصوص Worker تا Django بداند درخواست از پروکسی می‌آید
     headers.set("X-Forwarded-For", request.headers.get("cf-connecting-ip") || "unknown");
     headers.set("X-Proxy-Source", "cloudflare-worker");
 
@@ -76,7 +79,6 @@ export default {
       const response = await fetch(proxyRequest);
       const responseHeaders = new Headers(response.headers);
 
-      // حذف هدرهایی که نباید به کلاینت برگردند
       responseHeaders.delete("x-frame-options");
       responseHeaders.delete("content-security-policy");
 
@@ -98,8 +100,61 @@ export default {
 };
 
 /**
- * ساخت JSON response
+ * پروکسی درخواست OTP از Django به n8n
  */
+async function proxyToN8n(request, env) {
+  const n8nWebhookUrl = env.N8N_WEBHOOK_URL;
+  const secretToken = env.N8N_SECRET_TOKEN;
+
+  if (!n8nWebhookUrl) {
+    return handleCors(
+      JsonResponse({ error: "N8N_WEBHOOK_URL not configured." }, 500),
+      env
+    );
+  }
+
+  // بررسی توکن امنیتی
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return handleCors(
+      JsonResponse({ error: "Invalid JSON body." }, 400),
+      env
+    );
+  }
+
+  if (body.secret_token !== secretToken) {
+    return handleCors(
+      JsonResponse({ error: "Unauthorized: invalid secret token." }, 401),
+      env
+    );
+  }
+
+  try {
+    const n8nResponse = await fetch(n8nWebhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    const responseData = await n8nResponse.text();
+
+    return handleCors(
+      new Response(responseData, {
+        status: n8nResponse.status,
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+      }),
+      env
+    );
+  } catch (err) {
+    return handleCors(
+      JsonResponse({ error: "Failed to reach n8n.", detail: err.message }, 502),
+      env
+    );
+  }
+}
+
 function JsonResponse(data, status = 200) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
@@ -107,12 +162,8 @@ function JsonResponse(data, status = 200) {
   });
 }
 
-/**
- * اضافه کردن هدرهای CORS
- */
 function handleCors(response, env) {
   const newHeaders = new Headers(response.headers);
-  // اجازه دسترسی از همه (برای n8n cloud)
   newHeaders.set("Access-Control-Allow-Origin", "*");
   newHeaders.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   newHeaders.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");

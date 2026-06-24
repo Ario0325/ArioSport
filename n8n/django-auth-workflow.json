@@ -1,0 +1,355 @@
+{
+  "name": "Django n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "django-auth-event",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "4c240814-ea01-4467-844d-8db067e363eb",
+      "name": "Auth Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        112,
+        304
+      ],
+      "webhookId": "d4c7926b-c6c9-4c9a-b6be-decb88733293"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "event",
+              "value": "={{ $json.body?.event ?? $json.event ?? \"register\" }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "email",
+              "value": "={{ $json.body?.email ?? $json.email ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "username",
+              "value": "={{ $json.body?.username ?? $json.username ?? \"کاربر\" }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "code",
+              "value": "={{ $json.body?.code ?? $json.code ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "a5",
+              "name": "reset_link",
+              "value": "={{ $json.body?.reset_link ?? $json.reset_link ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "a6",
+              "name": "sender_email",
+              "value": "={{ $json.body?.sender_email ?? $json.sender_email ?? \"codeclaude080@gmail.com\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7aa14012-06eb-432a-a4cf-7b0f96d1ebed",
+      "name": "Normalize Auth Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "register"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "password_reset"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      },
+      "id": "6bcaf91b-fbaf-4c1e-9ec5-ed4691a5835f",
+      "name": "Route Auth Event",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        784,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.sender_email ?? 'codeclaude080@gmail.com' }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "آریو شاپ - کد تایید ثبت‌نام شما",
+        "html": "=<div dir=\"rtl\" style=\"font-family: Vazir, Tahoma, sans-serif; max-width:600px; margin:auto; padding:30px; background:#f9f9f9; border-radius:10px;\"><h2 style=\"color:#2c3e50;\">🛍️ آریو شاپ</h2><p>کاربر گرامی <strong>{{ $json.username }}</strong>،</p><p>برای تکمیل ثبت‌نام در آریو شاپ از کد زیر استفاده کنید:</p><div style=\"background:#2c3e50;color:#fff;font-size:28px;font-weight:bold;text-align:center;padding:20px;border-radius:8px;letter-spacing:8px;\">{{ $json.code }}</div><p style=\"color:#888;font-size:13px;\">این کد تا ۱۵ دقیقه معتبر است.</p><hr/><p style=\"color:#aaa;font-size:12px;\">اگر شما این درخواست را نداده‌اید، این ایمیل را نادیده بگیرید.</p></div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "9463d400-6ba7-4bdb-bec3-2a512a49b83b",
+      "name": "Send Verification Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1008,
+        112
+      ],
+      "webhookId": "433c86af-c09e-48c7-b8c4-5d39063f3c7b"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"status\": \"ok\", \"message\": \"email sent\"}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "0ad7591d-0950-4ee0-a5e6-20c2955c866e",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1232,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.sender_email ?? 'codeclaude080@gmail.com' }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "آریو شاپ - کد تایید بازیابی رمز عبور",
+        "html": "=<div dir=\"rtl\" style=\"font-family: Vazir, Tahoma, sans-serif; max-width:600px; margin:auto; padding:30px; background:#f9f9f9; border-radius:10px;\"><h2 style=\"color:#2c3e50;\">🛍️ آریو شاپ</h2><p>کاربر گرامی <strong>{{ $json.username }}</strong>،</p><p>درخواست بازیابی رمز عبور برای حساب شما ثبت شد. از کد زیر استفاده کنید:</p><div style=\"background:#e74c3c;color:#fff;font-size:28px;font-weight:bold;text-align:center;padding:20px;border-radius:8px;letter-spacing:8px;\">{{ $json.code }}</div><p style=\"color:#888;font-size:13px;\">این کد تا ۱۵ دقیقه معتبر است.</p><hr/><p style=\"color:#aaa;font-size:12px;\">اگر شما این درخواست را نداده‌اید، حساب شما امن است.</p></div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "a593e6bb-24f2-43b9-9672-b41b3575c82d",
+      "name": "Send Password Reset Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1008,
+        304
+      ],
+      "webhookId": "82b6f0b8-e1be-4417-9ece-6adfd24f5bdd"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"status\": \"ok\", \"message\": \"reset email sent\"}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "385ae188-8e7d-497c-b644-f727c044ccb7",
+      "name": "Respond Reset Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1232,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.body?.secret_token ?? $json.secret_token ?? \"\" }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "ario-shop-secret-token"
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "c5242808-8fe9-43c4-b4ec-6818148bcfda",
+      "name": "Validate Auth Secret",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"status\": \"error\", \"message\": \"Unauthorized\"}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "1ab0c2c0-9106-4019-a71d-9bcfa71c6da2",
+      "name": "Respond Auth Unauthorized",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        400
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Normalize Auth Payload": {
+      "main": [
+        [
+          {
+            "node": "Route Auth Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Auth Event": {
+      "main": [
+        [
+          {
+            "node": "Send Verification Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Password Reset Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Verification Email": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Password Reset Email": {
+      "main": [
+        [
+          {
+            "node": "Respond Reset Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Auth Secret",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Auth Secret": {
+      "main": [
+        [
+          {
+            "node": "Normalize Auth Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Auth Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "9a5a9793-94d4-4822-a4ac-8a74cf31cee2",
+  "meta": {
+    "instanceId": "4c370563c87e55c4f79e8657828b1281f1bdbf6199e0ed7619c11af29a71d7e5"
+  },
+  "nodeGroups": [],
+  "id": "If2tRWF3lgxuj6CS",
+  "tags": []
+}

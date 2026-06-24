@@ -1,0 +1,29 @@
+{
+  "name": "ArioSport - مرجع ورزشی",
+  "short_name": "ArioSport",
+  "description": "مرجع حرفه‌ای اخبار و تحلیل‌های ورزشی",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080b10",
+  "theme_color": "#18c964",
+  "orientation": "any",
+  "lang": "fa",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/static/assets/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/assets/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["news", "sports"],
+  "scope": "/",
+  "id": "/"
+}

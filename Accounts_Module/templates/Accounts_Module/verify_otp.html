@@ -1,0 +1,67 @@
+{% extends "shared/auth_base.html" %}
+{% load static %}
+{% block title %}تایید ایمیل | {{ site.site_name }}{% endblock %}
+{% block content %}
+<main class="auth">
+  <aside class="auth-visual">
+    <img src="{% static 'assets/images/post-basketball.jpg' %}" alt="تایید ایمیل" />
+    <div class="v-content">
+      <a href="{% url 'home:index' %}" class="logo" style="margin-bottom:26px;"><img src="{% static 'assets/images/logo-mark.png' %}" alt="" /><span class="logo-txt">Ario<b>Sport</b></span></a>
+      <h2>تایید ایمیل</h2>
+      <p>کد ۶ رقمی ارسال شده به ایمیل خود را وارد کنید تا حساب شما فعال شود.</p>
+    </div>
+  </aside>
+  <section class="auth-form-wrap">
+    <div class="auth-card">
+      <h1>کد تایید</h1>
+      <p class="sub">کد ۶ رقمی ارسال شده به <strong style="color:var(--primary-2);">{{ email }}</strong> را وارد کنید</p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="field">
+          <label>کد تایید</label>
+          <div class="input-wrap"><i data-lucide="shield-check"></i>{{ form.code }}</div>
+          {{ form.code.errors }}
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg"><i data-lucide="check-circle"></i> تایید کد</button>
+      </form>
+      <div class="otp-actions">
+        <form method="post" action="{% url 'accounts:resend_otp' %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn-link" id="resendBtn"><i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> ارسال مجدد کد</button>
+        </form>
+        <span id="otp-timer" class="otp-timer"></span>
+      </div>
+      <div class="auth-foot">
+        {% if purpose == "register" %}
+        <a href="{% url 'accounts:register' %}"><i data-lucide="arrow-right" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> بازگشت به ثبت‌نام</a>
+        {% else %}
+        <a href="{% url 'accounts:change_password' %}"><i data-lucide="arrow-right" style="width:14px;height:14px;display:inline-block;vertical-align:middle;"></i> بازگشت</a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(function(){
+  var btn = document.getElementById('resendBtn');
+  var timer = document.getElementById('otp-timer');
+  var secs = 120;
+  btn.style.pointerEvents = 'none';
+  btn.style.opacity = '0.4';
+  function tick(){
+    var m = Math.floor(secs/60);
+    var s = secs%60;
+    timer.textContent = (m>0?m+':':'')+(s<10?'0':'')+s;
+    secs--;
+    if(secs<0){
+      btn.style.pointerEvents = '';
+      btn.style.opacity = '';
+      timer.textContent = '';
+    } else {
+      setTimeout(tick, 1000);
+    }
+  }
+  tick();
+})();
+</script>
+{% endblock %}

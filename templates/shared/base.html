@@ -14,6 +14,12 @@
   <meta property="og:url" content="{{ request.build_absolute_uri }}" />
   {% block meta %}<meta property="og:type" content="website" />{% endblock %}
   <link rel="icon" type="image/png" href="{% if site.favicon %}{{ site.favicon.url }}{% else %}{% static 'assets/images/favicon.png' %}{% endif %}" />
+  <link rel="apple-touch-icon" href="{% static 'assets/images/icon-192.png' %}" />
+  <link rel="manifest" href="{% static 'manifest.json' %}" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ArioSport" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -44,6 +50,11 @@
   <button class="to-top" id="toTop" aria-label="بازگشت به بالا"><i data-lucide="arrow-up"></i></button>
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <script src="{% static 'assets/js/main.js' %}"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('{% static "sw.js" %}').catch(function(){});
+    }
+  </script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

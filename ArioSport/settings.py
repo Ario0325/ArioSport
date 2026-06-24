@@ -168,3 +168,15 @@ IMAGE_UPLOAD_MAX_WIDTH = 1920
 IMAGE_UPLOAD_MAX_HEIGHT = 1080
 IMAGE_UPLOAD_QUALITY = 82
 IMAGE_UPLOAD_MAX_SIZE_MB = 10
+
+# ---- n8n OTP Webhook ----
+N8N_WEBHOOK_URL = "https://ariosport.app.n8n.cloud/webhook/django-auth-event"
+N8N_SECRET_TOKEN = "ario-shop-secret-token"
+N8N_SENDER_EMAIL = "codeclaude080@gmail.com"
+
+# Cloudflare Worker Proxy (برای دور زدن محدودیت PythonAnywhere)
+N8N_USE_CLOUDFLARE_PROXY = True
+CLOUDFLARE_WORKER_URL = "https://ariosport-proxy.mimoomim456.workers.dev"
+
+# OTP Settings
+OTP_EXPIRY_MINUTES = 15
