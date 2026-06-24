@@ -25,6 +25,11 @@ N8N_WEBHOOK_URL = "https://ariosport.app.n8n.cloud/webhook/django-auth-event"
 SECRET_TOKEN = "ario-shop-secret-token"
 SENDER_EMAIL = "codeclaude080@gmail.com"
 
+HEADERS = {
+    "Content-Type": "application/json",
+    "User-Agent": "ArioSport-Django/1.0",
+}
+
 
 def test_worker_health():
     log.info("=" * 50)
@@ -34,6 +39,7 @@ def test_worker_health():
     log.info(f"URL: {url}")
     try:
         req = Request(url, method="GET")
+        req.add_header("User-Agent", "ArioSport-Django/1.0")
         with urlopen(req, timeout=10) as resp:
             data = resp.read().decode()
             log.info(f"Status: {resp.status}")
@@ -70,7 +76,7 @@ def test_worker_proxy_to_n8n():
     log.info(f"Payload: {json.dumps(payload, ensure_ascii=False)}")
     try:
         data = json.dumps(payload).encode("utf-8")
-        req = Request(url, data=data, headers={"Content-Type": "application/json"}, method="POST")
+        req = Request(url, data=data, headers=HEADERS, method="POST")
         with urlopen(req, timeout=15) as resp:
             body = resp.read().decode()
             log.info(f"Status: {resp.status}")
@@ -113,7 +119,7 @@ def test_direct_n8n():
     log.info(f"URL: {url}")
     try:
         data = json.dumps(payload).encode("utf-8")
-        req = Request(url, data=data, headers={"Content-Type": "application/json"}, method="POST")
+        req = Request(url, data=data, headers=HEADERS, method="POST")
         with urlopen(req, timeout=15) as resp:
             body = resp.read().decode()
             log.info(f"Status: {resp.status}")
@@ -125,7 +131,7 @@ def test_direct_n8n():
                 log.warning(f"⚠️ پاسخ غیرمنتظره")
                 return False
     except URLError as e:
-        log.error(f"❌ خطا (ممکن است PythonAnywhere بلاک کرده باشد): {e}")
+        log.error(f"❌ خطا (PythonAnywhere اتصال مستقیم را بلاک می‌کند - طبیعی است): {e}")
         return False
     except Exception as e:
         log.error(f"❌ خطای غیرمنتظره: {e}")
@@ -150,7 +156,7 @@ def test_password_reset_email():
     log.info(f"Payload: {json.dumps(payload, ensure_ascii=False)}")
     try:
         data = json.dumps(payload).encode("utf-8")
-        req = Request(url, data=data, headers={"Content-Type": "application/json"}, method="POST")
+        req = Request(url, data=data, headers=HEADERS, method="POST")
         with urlopen(req, timeout=15) as resp:
             body = resp.read().decode()
             log.info(f"Status: {resp.status}")

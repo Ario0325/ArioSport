@@ -134,7 +134,10 @@ async function proxyToN8n(request, env) {
   try {
     const n8nResponse = await fetch(n8nWebhookUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": "ArioSport-Worker/1.0",
+      },
       body: JSON.stringify(body),
     });
 

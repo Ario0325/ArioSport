@@ -34,7 +34,10 @@ def send_auth_event(event, email, username="", code="", reset_link=""):
 
     try:
         data = json.dumps(payload).encode("utf-8")
-        req = Request(target_url, data=data, headers={"Content-Type": "application/json"}, method="POST")
+        req = Request(target_url, data=data, headers={
+            "Content-Type": "application/json",
+            "User-Agent": "ArioSport-Django/1.0",
+        }, method="POST")
         with urlopen(req, timeout=15) as resp:
             status = resp.status
             logger.info(f"OTP webhook response ({target_url}): {status}")
